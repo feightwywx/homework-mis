@@ -1,0 +1,25 @@
+.site-layout-content {
+  min-height: 30vh;
+  padding: 24px;
+  background: #fff;
+  margin-top: 32px;
+}
+
+.layout_content {
+  max-width: 90vw;
+  min-width: 80vw;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 50;
+}
+
+.logo {
+  float: left;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  margin-right: 16px;
+}
+
+.user {
+  float: right;
+}

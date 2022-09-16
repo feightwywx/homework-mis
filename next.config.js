@@ -4,4 +4,10 @@ const nextConfig = {
   swcMinify: true,
 }
 
-module.exports = nextConfig
+const withLess = require("next-with-less");
+
+module.exports = withLess({
+  lessLoaderOptions: {
+  },
+  ...nextConfig
+});
