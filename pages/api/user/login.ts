@@ -1,4 +1,4 @@
-import type { User } from './info';
+import { User } from "../../../utils/types";
 
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { sessionOptions } from '../../../utils/session'

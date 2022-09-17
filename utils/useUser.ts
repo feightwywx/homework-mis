@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import Router from 'next/router'
 import useSWR from 'swr'
-import { User } from '../pages/api/user/info'
+import { User } from "./types"
 
 export default function useUser() {
   const { data: user, mutate: mutateUser } = useSWR<User>(

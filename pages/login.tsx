@@ -1,8 +1,7 @@
 import { NextPage } from 'next';
 import React from 'react';
 import HwLayout from '../components/layout';
-import { Typography, Form, Input, Button, Radio, RadioChangeEvent } from 'antd';
-import { getToken } from '../utils/token';
+import { Typography, Form, Input, Button, Radio } from 'antd';
 import useUser from '../utils/useUser';
 
 const { Title } = Typography

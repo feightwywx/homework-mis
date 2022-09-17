@@ -4,7 +4,7 @@ type nameRow = {
   name: string
 }
 
-export default async function getName(usertype: string, token: string) {
+export async function getName(usertype: string, token: string) {
   const selectQuery = `SELECT name FROM ${usertype} WHERE token=?`
 
   const [rows] = await (await sqlConnection).execute(

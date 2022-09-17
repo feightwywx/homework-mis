@@ -1,4 +1,4 @@
-import { UserType } from "../pages/api/user/info";
+import { UserType } from "./types";
 import { sqlConnection } from './mysql';
 import { randomBytes } from 'crypto';
 
@@ -24,7 +24,6 @@ export async function getToken(username: string, password: string, usertype: Use
       return (rows as Array<TokenRow>)[0].token
     } else {                                            // token不存在，生成token存入数据库
       const newToken = await generateToken();           // 然后返回新的token
-      console.log(newToken);
       const [] = await (await sqlConnection).execute(
         updateQuery, [newToken, username]
       )
