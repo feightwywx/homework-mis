@@ -1,4 +1,4 @@
-import { UserType } from "../pages/api/user";
+import { UserType } from "../pages/api/user/info";
 import { sqlConnection } from './mysql';
 import { randomBytes } from 'crypto';
 

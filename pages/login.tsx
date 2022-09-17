@@ -3,16 +3,29 @@ import React from 'react';
 import HwLayout from '../components/layout';
 import { Typography, Form, Input, Button, Radio, RadioChangeEvent } from 'antd';
 import { getToken } from '../utils/token';
+import useUser from '../utils/useUser';
 
 const { Title } = Typography
 
 function Login() {
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
+  const { mutateUser } = useUser()
+
+  async function onFinish(values: any) {
+    try {
+      const res = await fetch('/api/user/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values)
+      });
+      const json = await res.json();
+      mutateUser(json);
+    } catch (e) {
+      console.error(e)
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
+    console.log('验证失败', errorInfo);
   };
 
   return (
@@ -23,7 +36,7 @@ function Login() {
         <Title>登录</Title>
         <Form
           name='login'
-          autoComplete='off'
+          autoComplete='on'
           style={{ marginTop: 32, alignContent: 'left' }}
           initialValues={{
             usertype: 'student'

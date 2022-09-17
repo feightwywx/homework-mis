@@ -6,14 +6,16 @@ import Image from 'next/image'
 import type { NextPage } from 'next'
 import { UserOutlined } from '@ant-design/icons';
 import styles from '../styles/Home.module.css'
+import useUser from '../utils/useUser';
 
 const { Title, Paragraph, Text } = Typography
 
 const Home: NextPage = () => {
+  const { user } = useUser()
   return (
     <HwLayout>
       <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
-        <Title style={{ marginBottom: '16px' }}>早上好，嘉然今天吃什么同学</Title>
+        <Title style={{ marginBottom: '16px' }}>早上好，{user?.name}同学</Title>
         <Title level={4} style={{ marginTop: 0 }}>目前有5项作业需要完成，现在还不能休息哦～</Title>
         <Divider />
         <Title level={5}>待完成作业</Title>

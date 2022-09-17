@@ -3,10 +3,21 @@ import { DownOutlined, UserOutlined } from '@ant-design/icons';
 
 import React from 'react';
 import styles from '../styles/Layout.module.css';
+import useUser from '../utils/useUser';
+import fetchJson from '../utils/fetchJson';
 
 const { Header, Content, Footer } = Layout
 
 export default function HwLayout({ children }: { children: React.ReactNode }): JSX.Element {
+  const { user, mutateUser } = useUser()
+
+  async function onLogoutClick(e: React.MouseEvent<HTMLDivElement>) {
+    e.preventDefault();
+    mutateUser(
+      await fetchJson('/api/user/logout', {method: 'POST'})
+    )
+  }
+
   return (
     <Layout>
       <Header>
@@ -28,38 +39,41 @@ export default function HwLayout({ children }: { children: React.ReactNode }): J
           }
           style={{ float: 'left' }}>
         </Menu>
-        <div className={styles.user}>
-          <Avatar icon={<UserOutlined />} />
-          <Dropdown overlay={
-            <Menu items={[
-              {
-                key: 'logout',
-                label: '注销'
-              }
-            ]}
-            style={{marginTop: 12, padding: 12}}
-            />
-          }
-          
-          trigger={['click']}>
-            <a onClick={e => e.preventDefault()} style={{
-              color: '#fff', 
-              marginLeft: 12
+        {user?.isLoggedIn ?
+          <div className={styles.user}>
+            <Avatar icon={<UserOutlined />} />
+            <Dropdown overlay={
+              <Menu items={[
+                {
+                  key: 'logout',
+                  label: <div onClick={onLogoutClick}>注销</div>
+                }
+              ]}
+                style={{ marginTop: 12, padding: 12 }}
+              />
+            }
+
+              trigger={['click']}>
+              <a onClick={e => e.preventDefault()} style={{
+                color: '#fff',
+                marginLeft: 12
               }}>
-              <Space>
-                嘉然今天吃什么
-                <DownOutlined />
-              </Space>
-            </a>
-          </Dropdown>
-        </div>
+                <Space>
+                  {user.name}
+                  <DownOutlined />
+                </Space>
+              </a>
+            </Dropdown>
+          </div>
+          : null}
+
       </Header>
       <Content className={styles.layout_content} >
         <div className={styles['site-layout-content']}>
           {children}
         </div>
       </Content>
-      <Footer style={{textAlign: 'center'}}>
+      <Footer style={{ textAlign: 'center' }}>
         ©️2022 .direwolf
       </Footer>
     </Layout>
