@@ -1,20 +1,57 @@
-import { sqlConnection } from "./mysql";
+import { createMisConn } from "./mysql";
 
 type nameRow = {
   name: string
 }
 
-export async function getName(usertype: string, token: string) {
+type idRow = {
+  id: number
+}
+
+export async function getNameByToken(usertype: string, token: string) {
   const selectQuery = `SELECT name FROM ${usertype} WHERE token=?`
 
-  const [rows] = await (await sqlConnection).execute(
+  const conn = await createMisConn()
+  const [rows] = await conn.execute(
     selectQuery, [token]
   )
-  
+  conn.destroy()
+
   if ((rows as Array<nameRow>).length === 0) {
     return null;
   } else {
     return (rows as Array<nameRow>)[0].name;
   }
-  
+
+}
+
+export async function getId(usertype: string, token: string) {
+  const selectQuery = `SELECT id FROM ${usertype} WHERE token=?`
+
+  const conn = await createMisConn();
+  const [rows] = await conn.execute(
+    selectQuery, [token]
+  )
+  conn.destroy()
+
+  if ((rows as Array<idRow>).length === 0) {
+    return null;
+  } else {
+    return (rows as Array<idRow>)[0].id;
+  }
+}
+
+export async function getTeacherName(id: number) {
+  const conn = await createMisConn()
+  const [rows] = await conn.execute(
+    `SELECT name FROM teacher WHERE id=?`, [id]
+  )
+  conn.destroy()
+
+  if ((rows as Array<nameRow>).length === 0) {
+    return null;
+  } else {
+    return (rows as Array<nameRow>)[0].name;
+  }
+
 }

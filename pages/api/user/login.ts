@@ -10,7 +10,6 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   const { username, password, usertype } = await req.body;
   try {
     const token = await getToken(username, password, usertype);
-    
     if (token === null) {
       res.status(401).json({ message: '用户名或密码错误' });
     } else {

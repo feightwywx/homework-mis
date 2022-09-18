@@ -7,9 +7,15 @@ export type User = {
 
 export type UserType = 'student' | 'teacher';
 
-export type Homework = {
+export interface StudentHomework extends Homework {
+  completed: boolean;
+}
+
+export interface Homework {
   id: number;
   title: string;
   assignment: string;
+  time: string;
   deadline: string;
+  teacher: string;
 }

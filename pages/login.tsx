@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 import React from 'react';
 import HwLayout from '../components/layout';
 import { Typography, Form, Input, Button, Radio } from 'antd';
-import useUser from '../utils/useUser';
+import useUser from '../utils/hooks/useUser';
 
 const { Title } = Typography
 

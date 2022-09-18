@@ -1,6 +1,6 @@
 import { UserType } from "./types";
-import { sqlConnection } from './mysql';
 import { randomBytes } from 'crypto';
+import { createMisConn } from "./mysql";
 
 type TokenRow = {
   token: string
@@ -14,19 +14,23 @@ export async function getToken(username: string, password: string, usertype: Use
   const selectQuery = `SELECT token FROM ${usertype} WHERE actual_id=? AND password=?`
   const updateQuery = `UPDATE ${usertype} SET token=? WHERE actual_id=?`
 
-  const [rows] = await (await sqlConnection).execute(
+  const conn = await createMisConn();
+  const [rows] = await conn.execute(
     selectQuery, [username, password]
   )
+  conn.destroy();
 
   if ((rows as Array<TokenRow>).length !== 0) {         // 账号密码匹配
     const token = (rows as Array<TokenRow>)[0].token
     if (token !== null) {                               // token存在，直接返回
       return (rows as Array<TokenRow>)[0].token
     } else {                                            // token不存在，生成token存入数据库
-      const newToken = await generateToken();           // 然后返回新的token
-      const [] = await (await sqlConnection).execute(
+      const newToken = await generateToken();  
+      const conn = await createMisConn();         // 然后返回新的token
+      const [] = await conn.execute(
         updateQuery, [newToken, username]
       )
+      conn.destroy();
       return newToken;
     }
   } else {                                              // 账号密码不匹配

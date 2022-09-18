@@ -3,7 +3,7 @@ import { DownOutlined, UserOutlined } from '@ant-design/icons';
 
 import React from 'react';
 import styles from '../styles/Layout.module.css';
-import useUser from '../utils/useUser';
+import useUser from '../utils/hooks/useUser';
 import fetchJson from '../utils/fetchJson';
 
 const { Header, Content, Footer } = Layout

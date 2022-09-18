@@ -1,11 +1,10 @@
 import { useEffect } from 'react'
 import Router from 'next/router'
 import useSWR from 'swr'
-import { User } from "./types"
+import { User } from "../types"
 
 export default function useUser() {
-  const { data: user, mutate: mutateUser } = useSWR<User>(
-    '/api/user/info')
+  const { data: user, mutate: mutateUser } = useSWR<User>('/api/user/info')
 
   useEffect(() => {
     if (!user) return        //  未加载，什么也不做
