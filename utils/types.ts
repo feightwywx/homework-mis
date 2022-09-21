@@ -19,3 +19,27 @@ export interface Homework {
   deadline: string;
   teacher: string;
 }
+
+export interface HomeworkDetail {
+  title: string;
+  assignment: string;
+  time: string;
+  deadline: string;
+}
+
+export interface HomeworkDetailContent {
+  completed: boolean;
+  accomplishment?: {
+    time: string;
+    content: string;
+  };
+  judge?: {
+    score: number;
+    comment: string;
+  }
+}
+
+export interface HomeworkStudentDetail {
+  detail : HomeworkDetail;
+  content: HomeworkDetailContent;
+}

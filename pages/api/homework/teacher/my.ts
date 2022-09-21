@@ -1,6 +1,6 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
-import { getTeacherHomework } from "../../../../utils/homework";
+import { getTeacherHomeworks } from "../../../../utils/homework";
 import { sessionOptions } from "../../../../utils/session";
 import { getId } from "../../../../utils/user";
 
@@ -14,7 +14,7 @@ async function teacherMyRoute(req: NextApiRequest, res: NextApiResponse) {
   const id = await getId('teacher', token);
 
   if (id) {
-    res.json(await getTeacherHomework(id))
+    res.json(await getTeacherHomeworks(id))
   } else {
     res.status(401);
   }
