@@ -4,6 +4,7 @@ import HwLayout from '../../components/layout';
 import { Typography, Space, Button, Divider, Tag, Modal, Input, InputRef } from 'antd';
 import { ArrowLeftOutlined, FormOutlined } from '@ant-design/icons';
 import Link from 'next/link';
+import { useMediaPredicate } from "react-media-hook";
 import useUser from '../../utils/hooks/useUser';
 import { HomeworkDetail, HomeworkDetailContent, HomeworkStudentDetail } from '../../utils/types';
 import React, { useEffect, useRef, useState } from 'react';
@@ -17,7 +18,9 @@ function HomeworkDetailRoute() {
   const router = useRouter();
   const { hwid } = router.query;
 
-  const { data, error } = useSWR(`/api/homework/student/detail/${hwid}`);
+  const { user } = useUser();
+
+  const { data, error } = useSWR(`/api/homework/${user?.userType}/detail/${hwid}`);
 
   const detail = (data as HomeworkStudentDetail)?.detail;
   const content = (data as HomeworkStudentDetail)?.content;
@@ -28,7 +31,11 @@ function HomeworkDetailRoute() {
       {data && hwid &&
         <>
           <CommonDetail content={detail} />
-          <StudentDetail content={content} dead={dead} hwid={+hwid} />
+          {user?.userType === 'student'
+            ? <StudentDetail content={content} dead={dead} hwid={+hwid} />
+            : <TeacherDetail content={content} dead={dead} hwid={+hwid} />
+          }
+
         </>
       }
     </HwLayout>
@@ -77,7 +84,7 @@ export function StudentDetail({ content, dead = false, hwid }: { content: Homewo
     fetch(`/api/homework/student/update/${hwid}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({content: accContent})
+      body: JSON.stringify({ content: accContent })
     }).then(res => {
       console.log(res);
       setConfirmLoading(false);
@@ -87,15 +94,7 @@ export function StudentDetail({ content, dead = false, hwid }: { content: Homewo
     })
   }
 
-  const [matches, setMatches] = useState(
-    window.matchMedia("(min-width: 768px)").matches
-  )
-
-  useEffect(() => {
-    window
-    .matchMedia("(min-width: 768px)")
-    .addEventListener('change', e => setMatches( e.matches ));
-  }, [window]);
+  const matches = useMediaPredicate("(min-width: 768px)")
 
   return (
     <>
@@ -164,6 +163,12 @@ export function StudentDetail({ content, dead = false, hwid }: { content: Homewo
         />
       </Modal>
     </>)
+}
+
+export function TeacherDetail({ content, dead = false, hwid }: { content: HomeworkDetailContent, dead: boolean, hwid: number }) {
+  return (<>
+
+  </>)
 }
 
 export default HomeworkDetailRoute as NextPage;

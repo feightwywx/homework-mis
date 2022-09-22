@@ -1,5 +1,6 @@
 import { Avatar, Breadcrumb, Dropdown, Layout, Menu, Space } from 'antd';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
+import { useMediaPredicate } from "react-media-hook";
 
 import React, { useState, useEffect } from 'react';
 import styles from '../styles/Layout.module.css';
@@ -14,44 +15,36 @@ export default function HwLayout({ children }: { children: React.ReactNode }): J
   async function onLogoutClick(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
     mutateUser(
-      await fetchJson('/api/user/logout', {method: 'POST'})
+      await fetchJson('/api/user/logout', { method: 'POST' })
     )
   }
 
-  const [matches, setMatches] = useState(
-    window.matchMedia("(min-width: 768px)").matches
-  )
-
-  useEffect(() => {
-    window
-    .matchMedia("(min-width: 768px)")
-    .addEventListener('change', e => setMatches( e.matches ));
-  }, [window]);
+  const matches = useMediaPredicate("(min-width: 768px)")
 
   return (
     <Layout>
       <Header>
         <div className={styles.logo}>学生作业管理系统</div>
         {matches &&
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          items={
-            [
-              {
-                key: 'home',
-                label: (
-                  <a href="/">
-                    首页
-                  </a>
-                )
-              }
-            ]
-          }
-          style={{ float: 'left' }}>
-        </Menu>
+          <Menu
+            theme="dark"
+            mode="horizontal"
+            items={
+              [
+                {
+                  key: 'home',
+                  label: (
+                    <a href="/">
+                      首页
+                    </a>
+                  )
+                }
+              ]
+            }
+            style={{ float: 'left' }}>
+          </Menu>
         }
-        
+
         {user?.isLoggedIn ?
           <div className={styles.user}>
             <Avatar icon={<UserOutlined />} />
