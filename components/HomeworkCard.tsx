@@ -38,7 +38,9 @@ export function HomeworkCard({ homework }: { homework: Homework | StudentHomewor
           >已过期</Tag>
           )
         }
-      </>} extra={<Link href={`homeworkDetail/${homework.id}`}>查看</Link>} style={{ marginBottom: 16 }}>
+      </>}
+      extra={<Link href={`homeworkDetail/${homework.id}`}>查看</Link>}
+      style={{ marginBottom: 16, display: 'block' }}>
       <Text>发布时间：{time.toLocaleString()}</Text><br />
       <Text>截止时间：{deadline.toLocaleString()}</Text>
       <Divider style={{ margin: '16px 0px' }} />

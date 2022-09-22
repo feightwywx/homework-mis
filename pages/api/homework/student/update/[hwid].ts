@@ -7,7 +7,7 @@ import { getId } from "../../../../../utils/user";
 async function studentUpdateRoute(req: NextApiRequest, res: NextApiResponse) {
   const { hwid } = req.query;
   const { content } = await req.body;
-  console.log('hwid', hwid ,content)
+
   if (!hwid) {
     res.status(500).end();
     return;

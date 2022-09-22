@@ -1,7 +1,7 @@
 import { Avatar, Breadcrumb, Dropdown, Layout, Menu, Space } from 'antd';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../styles/Layout.module.css';
 import useUser from '../utils/hooks/useUser';
 import fetchJson from '../utils/fetchJson';
@@ -18,10 +18,21 @@ export default function HwLayout({ children }: { children: React.ReactNode }): J
     )
   }
 
+  const [matches, setMatches] = useState(
+    window.matchMedia("(min-width: 768px)").matches
+  )
+
+  useEffect(() => {
+    window
+    .matchMedia("(min-width: 768px)")
+    .addEventListener('change', e => setMatches( e.matches ));
+  }, [window]);
+
   return (
     <Layout>
       <Header>
         <div className={styles.logo}>学生作业管理系统</div>
+        {matches &&
         <Menu
           theme="dark"
           mode="horizontal"
@@ -39,6 +50,8 @@ export default function HwLayout({ children }: { children: React.ReactNode }): J
           }
           style={{ float: 'left' }}>
         </Menu>
+        }
+        
         {user?.isLoggedIn ?
           <div className={styles.user}>
             <Avatar icon={<UserOutlined />} />
@@ -59,7 +72,7 @@ export default function HwLayout({ children }: { children: React.ReactNode }): J
                 marginLeft: 12
               }}>
                 <Space>
-                  {user.name}
+                  {matches && user.name}
                   <DownOutlined />
                 </Space>
               </a>

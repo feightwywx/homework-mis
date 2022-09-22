@@ -53,12 +53,12 @@ export function StudentHome(): JSX.Element {
             );
             return filtered?.length ? (
               filtered.map((item, index) => (
-                <Col span={8} key={index}>
+                <Col xs={24} md={12} xl={8} key={index}>
                   <HomeworkCard homework={item} />
                 </Col>
               ))
             ) : (
-              <Col span={8} style={{ marginBottom: 12 }}>
+              <Col span={24} style={{ marginBottom: 12 }}>
                 <Text>暂时还没有进行中作业～</Text>
               </Col>
             );
@@ -72,12 +72,12 @@ export function StudentHome(): JSX.Element {
             );
             return filtered?.length ? (
               filtered.map((item, index) => (
-                <Col span={8} key={index}>
+                <Col xs={24} md={12} xl={8} key={index}>
                   <HomeworkCard homework={item} />
                 </Col>
               ))
             ) : (
-              <Col span={8} style={{ marginBottom: 12 }}>
+              <Col span={24} style={{ marginBottom: 12 }}>
                 <Text>暂时还没有已过期作业～</Text>
               </Col>
             );

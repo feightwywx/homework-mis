@@ -66,6 +66,7 @@ export function StudentDetail({ content, dead = false, hwid }: { content: Homewo
   const [modalOpen, setModalOpen] = useState(false);
   const [accContent, setAccContent] = useState('');
   const [confirmLoading, setConfirmLoading] = useState(false)
+  const router = useRouter();
 
   function accFieldHandler(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setAccContent(e.target.value);
@@ -85,6 +86,16 @@ export function StudentDetail({ content, dead = false, hwid }: { content: Homewo
       console.error(err)
     })
   }
+
+  const [matches, setMatches] = useState(
+    window.matchMedia("(min-width: 768px)").matches
+  )
+
+  useEffect(() => {
+    window
+    .matchMedia("(min-width: 768px)")
+    .addEventListener('change', e => setMatches( e.matches ));
+  }, [window]);
 
   return (
     <>
@@ -107,7 +118,7 @@ export function StudentDetail({ content, dead = false, hwid }: { content: Homewo
         {content.accomplishment?.content
           && <div>
             <Title level={3} style={{ float: 'left', marginBottom: 0 }}>提交内容</Title>
-            <Paragraph style={{ float: 'right', marginTop: 6 }}>提交时间：{parseMysqlDateTime(content.accomplishment.time).toLocaleString()}</Paragraph>
+            <Paragraph style={{ float: 'right', marginTop: 6 }}>{matches && '提交时间：'}{parseMysqlDateTime(content.accomplishment.time).toLocaleString()}</Paragraph>
           </div>}
         <Paragraph>
           {/* FIXME: 换行渲染不出来 */}
