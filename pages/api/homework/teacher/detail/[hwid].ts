@@ -1,6 +1,6 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
-import { getStudentHomeworkDetail } from "../../../../../utils/homework";
+import { getTeacherHomeworkDetail } from "../../../../../utils/homework";
 import { sessionOptions } from "../../../../../utils/session";
 import { getId } from "../../../../../utils/user";
 
@@ -26,7 +26,7 @@ async function teacherDetailRoute(req: NextApiRequest, res: NextApiResponse) {
     return;
   };
 
-  const result = await getStudentHomeworkDetail(+hwid, id);
+  const result = await getTeacherHomeworkDetail(+hwid, id);
   res.json(result);
 }
 

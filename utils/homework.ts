@@ -1,7 +1,7 @@
 import { ResultSetHeader } from "mysql2";
 import { createMisConn, getNowMySqlDateTime } from "./mysql";
 import parseMysqlDateTime from "./parseTime";
-import { StudentHomework, Homework, HomeworkDetailContent, HomeworkStudentDetail } from "./types";
+import { StudentHomework, Homework, HomeworkDetailContent, HomeworkStudentDetail, HomeworkTeacherDetailContent, HomeworkTeacherDetail } from "./types";
 import { getNameByToken, getTeacherName } from "./user";
 
 type StudentHomeworkRow = {
@@ -33,6 +33,16 @@ type HomeworkDetailRow = {
 type HomeworkDetailContentRow = {
   completed: number;
   time: string;
+  content: string;
+  score: number;
+  comment: string;
+}
+
+type TeacherHomeworkDetailRow = {
+  cid: number;          // ContentId
+  name: string;         // 学生名
+  time: string;
+  completed: number;
   content: string;
   score: number;
   comment: string;
@@ -108,7 +118,7 @@ export async function getStudentHomeworkDetail(hwid: number, stuid: number) {
   conn.destroy();
   if ((rows as Array<HomeworkDetailContentRow>).length === 0) return null;
   const detailContentRow = (rows as Array<HomeworkDetailContentRow>)[0];
-  
+
   let accomplishment = undefined;
   if (detailContentRow.time && detailContentRow.content) {
     accomplishment = {
@@ -116,7 +126,7 @@ export async function getStudentHomeworkDetail(hwid: number, stuid: number) {
       content: detailContentRow.content
     };
   }
-  
+
   let judge = undefined;
   if (detailContentRow.score) {
     judge = {
@@ -139,7 +149,7 @@ export async function getStudentHomeworkDetail(hwid: number, stuid: number) {
 
 export async function updateHomework(hwid: number, stuid: number, content: string) {
   const now = await getNowMySqlDateTime();
-  
+
   const conn = await createMisConn();
   const [rows] = await conn.execute(
     'UPDATE homework_content ' +
@@ -148,6 +158,54 @@ export async function updateHomework(hwid: number, stuid: number, content: strin
     [content, now, stuid, hwid]
   );
   conn.destroy();
-  
+
   return (rows as ResultSetHeader).affectedRows
+}
+
+export async function getTeacherHomeworkDetail(hwid: number, tid: number) {
+  const hwDetail = await getHomeworkDetail(hwid)
+  if (hwDetail === null) return null;
+
+  const conn = await createMisConn();
+  const [rows] = await conn.execute(
+    'SELECT homework_content.id AS cid, student.`name`, homework_content.time, completed, content, score, comment ' +
+    'FROM homework_content LEFT JOIN homework ' +
+    'ON homework_content.homeworkID=homework.id ' +
+    'LEFT JOIN student ON studentID=student.id ' +
+    'WHERE teacherID=? AND homeworkID=?',
+    [tid, hwid]
+  );
+  conn.destroy();
+
+  if ((rows as Array<TeacherHomeworkDetailRow>).length === 0) return null;
+  const detailContentRow = (rows as Array<TeacherHomeworkDetailRow>);
+
+  return {
+    detail: hwDetail,
+    content: detailContentRow.map((item, index) => {
+      let accomplishment = undefined;
+      if (item.time && item.content) {
+        accomplishment = {
+          time: item.time,
+          content: item.content
+        };
+      }
+
+      let judge = undefined;
+      if (item.score) {
+        judge = {
+          score: item.score,
+          comment: item.comment
+        }
+      }
+
+      return {
+        contentId: item.cid,
+        studentName: item.name,
+        completed: item.completed === 0 ? false : true,
+        accomplishment,
+        judge
+      } as HomeworkTeacherDetailContent;
+    })
+  }
 }

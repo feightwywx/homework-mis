@@ -1,15 +1,16 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import HwLayout from '../../components/layout';
-import { Typography, Space, Button, Divider, Tag, Modal, Input, InputRef } from 'antd';
+import { Typography, Space, Button, Divider, Tag, Modal, Input, InputRef, Table } from 'antd';
 import { ArrowLeftOutlined, FormOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { useMediaPredicate } from "react-media-hook";
 import useUser from '../../utils/hooks/useUser';
-import { HomeworkDetail, HomeworkDetailContent, HomeworkStudentDetail } from '../../utils/types';
+import { HomeworkDetail, HomeworkDetailContent, HomeworkStudentDetail, HomeworkTeacherDetail, HomeworkTeacherDetailContent } from '../../utils/types';
 import React, { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 import parseMysqlDateTime from '../../utils/parseTime';
+import { ColumnsType } from 'antd/lib/table';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -33,7 +34,7 @@ function HomeworkDetailRoute() {
           <CommonDetail content={detail} />
           {user?.userType === 'student'
             ? <StudentDetail content={content} dead={dead} hwid={+hwid} />
-            : <TeacherDetail content={content} dead={dead} hwid={+hwid} />
+            : <TeacherDetail content={(data as HomeworkTeacherDetail).content} hwid={+hwid} />
           }
 
         </>
@@ -43,6 +44,8 @@ function HomeworkDetailRoute() {
 }
 
 export function CommonDetail({ content: detail }: { content: HomeworkDetail }) {
+  const router = useRouter();
+
   return (<>
     <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
       <div>
@@ -51,7 +54,7 @@ export function CommonDetail({ content: detail }: { content: HomeworkDetail }) {
           style={{
             float: 'left', verticalAlign: 'middle', margin: '8px 24px 0 0'
           }}
-          href='/'
+          onClick={() => { router.push('/') }}
         />
         <Title style={{ float: 'left' }}>{detail.title}</Title>
       </div>
@@ -165,9 +168,97 @@ export function StudentDetail({ content, dead = false, hwid }: { content: Homewo
     </>)
 }
 
-export function TeacherDetail({ content, dead = false, hwid }: { content: HomeworkDetailContent, dead: boolean, hwid: number }) {
-  return (<>
+export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeacherDetailContent>, hwid: number }) {
+  interface DataType {
+    key: number;
+    name: string;
+    status: string[];
+    time: string;
+  }
 
+  const TagColor = {
+    '已完成': 'green',
+    '待评分': 'magenta',
+    '已评分': 'lime'
+  } as { [x: string]: string }
+
+  return (<>
+    <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+      <Title level={2}>已提交</Title>
+      <Table
+        dataSource={content.map((item, index) => {
+          let status = [];
+          if (item.completed) {
+            status.push('已完成')
+
+            if (!item.judge || (item.judge.score === null)) {
+              status.push('待评分')
+            } else {
+              status.push('已评分')
+            }
+          }
+
+          if (!item.completed) {
+            if (item.accomplishment?.content) {
+              status.push('已打回')
+            } else {
+              status.push('未完成')
+            }
+          }
+
+          return {
+            key: item.contentId,
+            name: item.studentName,
+            status: status,
+            time: item.accomplishment?.time ? parseMysqlDateTime(item.accomplishment?.time).toLocaleString() : ''
+          }
+        })}
+        columns={[
+          {
+            title: '姓名',
+            dataIndex: 'name',
+            key: 'name'
+          },
+          {
+            title: '状态',
+            dataIndex: 'status',
+            key: 'status',
+            render: (_, { status }) => (
+              <>
+                {status.map(tag => {
+                  return (
+                    <Tag color={TagColor[tag] ?? 'grey'} key={tag}>
+                      {tag}
+                    </Tag>
+                  );
+                })}
+              </>
+            )
+          },
+          {
+            title: '提交时间',
+            dataIndex: 'time',
+            key: 'time'
+          },
+          {
+            title: '操作',
+            key: 'action',
+            render: (_, record) => (
+              <Space size='small'>
+                <Button
+                  type='link'
+                  disabled={record.status.includes('未完成') || record.status.includes('已打回')}>
+                  批阅
+                </Button>
+                <Button
+                  type='link'
+                  disabled={record.status.includes('未完成') || record.status.includes('已打回')}>
+                  打回
+                </Button>
+              </Space>
+            )
+          }] as ColumnsType<DataType>} />
+    </Space>
   </>)
 }
 

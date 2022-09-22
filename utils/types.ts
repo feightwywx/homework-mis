@@ -43,3 +43,13 @@ export interface HomeworkStudentDetail {
   detail : HomeworkDetail;
   content: HomeworkDetailContent;
 }
+
+export interface HomeworkTeacherDetailContent extends HomeworkDetailContent {
+  contentId: number;
+  studentName: string;
+}
+
+export interface HomeworkTeacherDetail {
+  detail: HomeworkDetail;
+  content: Array<HomeworkTeacherDetailContent>;
+}
