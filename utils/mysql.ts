@@ -1,3 +1,4 @@
+import { createPool } from 'mysql2/promise';
 import { createConnection } from 'mysql2/promise';
 
 export async function createMisConn() {
@@ -8,6 +9,13 @@ export async function createMisConn() {
     database: 'homework_mis'
   })
 }
+
+export const sqlPool = createPool({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'homework_mis'
+})
 
 export async function getNowMySqlDateTime() {
   const date = new Date()

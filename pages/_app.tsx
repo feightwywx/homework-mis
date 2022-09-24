@@ -3,14 +3,21 @@ import '../styles/globals.less';
 
 import type { AppProps } from 'next/app'
 import { SWRConfig } from 'swr';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/lib/locale/zh_CN';
+
 
 function MyApp({ Component, pageProps }: AppProps) {
+
   return (
     <SWRConfig
     value={{
       fetcher: url => fetch(url).then(r => r.json())
     }}>
-      <Component {...pageProps} />
+      <ConfigProvider locale={zhCN}>
+        <Component {...pageProps} />
+      </ConfigProvider>
+      
     </SWRConfig>
   )
 }

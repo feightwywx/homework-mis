@@ -1,4 +1,4 @@
-import { createMisConn } from "./mysql";
+import { createMisConn, sqlPool } from "./mysql";
 
 type nameRow = {
   name: string
@@ -11,11 +11,11 @@ type idRow = {
 export async function getNameByToken(usertype: string, token: string) {
   const selectQuery = `SELECT name FROM ${usertype} WHERE token=?`
 
-  const conn = await createMisConn()
+  const conn = await sqlPool.getConnection()
   const [rows] = await conn.execute(
     selectQuery, [token]
   )
-  conn.destroy()
+  conn.release()
 
   if ((rows as Array<nameRow>).length === 0) {
     return null;
@@ -28,11 +28,11 @@ export async function getNameByToken(usertype: string, token: string) {
 export async function getId(usertype: string, token: string) {
   const selectQuery = `SELECT id FROM ${usertype} WHERE token=?`
 
-  const conn = await createMisConn();
+  const conn = await sqlPool.getConnection();
   const [rows] = await conn.execute(
     selectQuery, [token]
   )
-  conn.destroy()
+  conn.release()
 
   if ((rows as Array<idRow>).length === 0) {
     return null;
@@ -42,11 +42,11 @@ export async function getId(usertype: string, token: string) {
 }
 
 export async function getTeacherName(id: number) {
-  const conn = await createMisConn()
+  const conn = await sqlPool.getConnection()
   const [rows] = await conn.execute(
     `SELECT name FROM teacher WHERE id=?`, [id]
   )
-  conn.destroy()
+  conn.release()
 
   if ((rows as Array<nameRow>).length === 0) {
     return null;

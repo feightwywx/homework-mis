@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import HwLayout from '../../components/layout';
-import { Typography, Space, Button, Divider, Tag, Modal, Input, InputRef, Table } from 'antd';
+import { Typography, Space, Button, Divider, Tag, Modal, Input, Table, Form, InputNumber } from 'antd';
 import { ArrowLeftOutlined, FormOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { useMediaPredicate } from "react-media-hook";
@@ -15,7 +15,7 @@ import { ColumnsType } from 'antd/lib/table';
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
-function HomeworkDetailRoute() {
+function HomeworkDetail() {
   const router = useRouter();
   const { hwid } = router.query;
 
@@ -182,6 +182,30 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
     '已评分': 'lime'
   } as { [x: string]: string }
 
+  const [judgeModalOpen, setJudgeModalOpen] = useState(false);
+  const [confirmJudgeLoading, setConfirmJudgeLoading] = useState(false);
+  const [currentContent, setCurrentContent] = useState(0);
+
+  const [form] = Form.useForm();
+
+  const onCreate = (values: {
+    score: number, comment?: string
+  }) => {
+    setConfirmJudgeLoading(true);
+
+    fetch(`/api/homework/teacher/judge/${currentContent}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ score: values.score, comment: values.comment })
+    }).then(res => {
+      console.log(res);
+      setConfirmJudgeLoading(false);
+      setJudgeModalOpen(false);
+    }).catch(err => {
+      console.error(err)
+    })
+  };
+
   function rejectClickHandler(e: React.MouseEvent<HTMLButtonElement>) {
     fetch(`/api/homework/teacher/reject/${hwid}`, {
       method: 'POST',
@@ -256,9 +280,11 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
             key: 'action',
             render: (_, record) => (
               <Space size='small'>
+                {/* TODO: 查看Modal框，可链接到详情 */}
                 <Button
                   type='link'
-                  disabled={record.status.includes('未完成') || record.status.includes('已打回')}>
+                  disabled={record.status.includes('未完成') || record.status.includes('已打回')}
+                  onClick={() => { setJudgeModalOpen(true); setCurrentContent(record.key); }}>
                   批阅
                 </Button>
                 <Button
@@ -271,7 +297,55 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
             )
           }] as ColumnsType<DataType>} />
     </Space>
+    <Modal
+      open={judgeModalOpen}
+      title='作业提交'
+      onCancel={() => { setJudgeModalOpen(false); }}
+      width={'80vw'}
+      confirmLoading={confirmJudgeLoading}
+      onOk={() => {
+        form
+          .validateFields()
+          .then(values => {
+            form.resetFields();
+            onCreate(values);
+          })
+          .catch(info => {
+            console.log('Validate Failed:', info);
+          });
+      }}
+    >
+      <Form
+        form={form}
+        autoComplete='off'
+        requiredMark='optional'>
+        <Form.Item
+          label='得分 　　　　'
+          name='score'
+          rules={[{
+            required: true,
+            message: '请输入得分！'
+          },
+          {
+            type: 'number',
+            min: 0,
+            max: 100,
+            message: '得分需要在0～100之间！'
+          }]}>
+          <InputNumber />
+        </Form.Item>
+        <Form.Item
+          label='评语'
+          name='comment'>
+          <TextArea
+            rows={10}
+            showCount
+          />
+        </Form.Item>
+
+      </Form>
+    </Modal>
   </>)
 }
 
-export default HomeworkDetailRoute as NextPage;
+export default HomeworkDetail as NextPage;
