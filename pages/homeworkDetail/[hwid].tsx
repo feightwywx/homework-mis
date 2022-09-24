@@ -182,6 +182,17 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
     '已评分': 'lime'
   } as { [x: string]: string }
 
+  function rejectClickHandler(e: React.MouseEvent<HTMLButtonElement>) {
+    fetch(`/api/homework/teacher/reject/${hwid}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    }).then(res => {
+      console.log(res);
+    }).catch(err => {
+      console.error(err);
+    })
+  }
+
   return (<>
     <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
       <Title level={2}>已提交</Title>
@@ -252,7 +263,8 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
                 </Button>
                 <Button
                   type='link'
-                  disabled={record.status.includes('未完成') || record.status.includes('已打回')}>
+                  disabled={record.status.includes('未完成') || record.status.includes('已打回')}
+                  onClick={rejectClickHandler}>
                   打回
                 </Button>
               </Space>

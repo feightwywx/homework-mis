@@ -209,3 +209,16 @@ export async function getTeacherHomeworkDetail(hwid: number, tid: number) {
     })
   }
 }
+
+export async function setReject(hwid: number) {
+  const conn = await createMisConn();
+  const [rows] = await conn.execute(
+    'UPDATE homework_content ' +
+    'SET completed=0, score=NULL ' +
+    'WHERE homeworkID=?',
+    [hwid]
+  );
+  conn.destroy();
+
+  return (rows as ResultSetHeader).affectedRows
+}
