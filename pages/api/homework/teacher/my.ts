@@ -16,7 +16,7 @@ async function teacherMyRoute(req: NextApiRequest, res: NextApiResponse) {
   if (id) {
     res.json(await getTeacherHomeworks(id))
   } else {
-    res.status(401);
+    res.status(401).end();
   }
 
 }

@@ -16,7 +16,7 @@ async function studentMyRoute(req: NextApiRequest, res: NextApiResponse) {
   if (id) {
     res.json(await getStudentHomeworks(id))
   } else {
-    res.status(401);
+    res.status(401).end();
   }
 
 }
