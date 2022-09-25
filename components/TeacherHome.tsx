@@ -1,20 +1,100 @@
-import { Button, Col, Divider, Row, Space, Typography } from 'antd';
+import { Button, Col, DatePicker, Divider, Form, Input, Modal, Row, Space, Typography, TreeSelect } from 'antd';
 import { FormOutlined } from '@ant-design/icons';
 import HwLayout from './layout';
 import useUser from '../utils/hooks/useUser';
 import { useTeacherHomework } from '../utils/hooks/useHomework';
 import parseMysqlDateTime from '../utils/parseTime';
 import { HomeworkCard } from './HomeworkCard';
+import { ReactEventHandler, useState } from 'react';
+import moment, { Moment } from 'moment';
+import { RangePickerProps } from 'antd/lib/date-picker';
+import { useRouter } from 'next/router';
 
 const { Text, Title } = Typography
 
+const { TextArea } = Input
+
+const { SHOW_PARENT } = TreeSelect;
+
+const treeData = [
+  {
+    title: 'Node1',
+    value: '0-0',
+    key: '0-0',
+    children: [
+      {
+        title: 'Child Node1',
+        value: '0-0-0',
+        key: '0-0-0',
+      },
+    ],
+  },
+  {
+    title: 'Node2',
+    value: '0-1',
+    key: '0-1',
+    children: [
+      {
+        title: 'Child Node3',
+        value: '0-1-0',
+        key: '0-1-0',
+      },
+      {
+        title: 'Child Node4',
+        value: '0-1-1',
+        key: '0-1-1',
+      },
+      {
+        title: 'Child Node5',
+        value: '0-1-2',
+        key: '0-1-2',
+      },
+    ],
+  },
+];
+
 export function TeacherHome(): JSX.Element {
   const { user } = useUser();
+  const router = useRouter()
 
   const { homework } = useTeacherHomework();
 
   const currtime = new Date(Date.now())
   const hour = currtime.getHours();
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  const [form] = Form.useForm();
+  const disabledDate: RangePickerProps['disabledDate'] = current => {
+    return current && current < moment().startOf('day');
+  };
+
+  async function assignClickHandler(values: {
+    title: string,
+    assignment: string,
+    deadline: Moment
+  }) {
+    const deadline = values.deadline.format('YYYY-MM-DD HH:mm:ss');
+    console.log(values);
+    // setConfirmLoading(true);
+
+    // fetch(`/api/homework/teacher/assign`, {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({
+    //     title: values.title,
+    //     assignment: values.assignment,
+    //     deadline: deadline
+    //   })
+    // }).then(res => {
+    //   setConfirmLoading(false);
+    //   setModalOpen(false);
+    //   // router.reload();
+    // }).catch(err => {
+    //   console.error(err)
+    // })
+  }
 
   return (
     <HwLayout>
@@ -47,7 +127,12 @@ export function TeacherHome(): JSX.Element {
         })()}</Title>
         <Divider />
         <div>
-          <Button type='primary' shape='round' icon={<FormOutlined />} style={{ float: 'right' }}>下发作业</Button>
+          <Button
+            type='primary'
+            shape='round'
+            icon={<FormOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => { setModalOpen(true); }}>下发作业</Button>
           <Title level={5} style={{ float: 'left' }}>进行中作业</Title>
         </div>
         <Row gutter={16}>
@@ -88,5 +173,72 @@ export function TeacherHome(): JSX.Element {
           })()}
         </Row>
       </Space>
+      <Modal
+        open={modalOpen}
+        title='作业布置'
+        onCancel={() => { setModalOpen(false); }}
+        width={'80vw'}
+        confirmLoading={confirmLoading}
+        onOk={() => {
+          form
+            .validateFields()
+            .then(values => {
+              // form.resetFields();
+              assignClickHandler(values);
+            })
+            .catch(info => {
+              console.log('Validate Failed:', info);
+            });
+        }}
+      >
+        <Form
+          form={form}
+          autoComplete='off'
+          requiredMark='optional'>
+          <Form.Item
+            label='作业标题'
+            name='title'
+            rules={[{
+              required: true,
+            }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label='作业描述'
+            name='assignment'
+            rules={[{
+              required: true,
+            }]}>
+            <TextArea
+              rows={10}
+              showCount
+            />
+          </Form.Item>
+          <Form.Item
+            label='截止日期'
+            name='deadline'
+            rules={[{
+              required: true,
+            }]}>
+            <DatePicker
+              format="YYYY-MM-DD HH:mm:ss"
+              showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+              disabledDate={disabledDate}
+            />
+          </Form.Item>
+          <Form.Item
+            label='布置对象'
+            name='target'
+            rules={[{
+              required: true,
+            }]}>
+              <TreeSelect
+              treeData={treeData}
+              treeCheckable
+              showCheckedStrategy={SHOW_PARENT}
+               />
+            </Form.Item>
+        </Form>
+      </Modal>
     </HwLayout>);
 }

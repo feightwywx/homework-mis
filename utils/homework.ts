@@ -1,5 +1,5 @@
 import { ResultSetHeader } from "mysql2";
-import { getNowMySqlDateTime, sqlPool } from "./mysql";
+import { getNowMySqlDateTime, createMisConnection } from "./mysql";
 import parseMysqlDateTime from "./parseTime";
 import { StudentHomework, Homework, HomeworkDetailContent, HomeworkStudentDetail, HomeworkTeacherDetailContent, HomeworkTeacherDetail } from "./types";
 import { getNameByToken, getTeacherName } from "./user";
@@ -49,15 +49,16 @@ type TeacherHomeworkDetailRow = {
 }
 
 export async function getStudentHomeworks(id: number) {
-  const conn = await sqlPool.getConnection();
-  const [rows] = await conn.execute(
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
     'SELECT homework.id, title, assignment, homework.time, deadline, completed, teacher.name ' +
     'FROM homework JOIN homework_content JOIN teacher ' +
     'ON homework.id=homework_content.id AND homework.teacherID=teacher.id ' +
     'WHERE studentID=?',
     [id]
   )
-  conn.release();
+  await conn.end();
+  
   const homeworks = (rows as Array<StudentHomeworkRow>).map((row) => {
     return {
       ...row,
@@ -70,15 +71,16 @@ export async function getStudentHomeworks(id: number) {
 }
 
 export async function getTeacherHomeworks(id: number) {
-  const conn = await sqlPool.getConnection();
-  const [rows] = await conn.execute(
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
     'SELECT homework.id, title, assignment, homework.time, deadline, teacher.name ' +
     'FROM homework JOIN teacher ' +
     'ON homework.teacherID=teacher.id ' +
     'WHERE teacherID=?',
     [id]
   )
-  conn.release();
+  await conn.end();
+  
   const homeworks = (rows as Array<HomeworkRow>).map((row) => {
     return {
       ...row,
@@ -90,14 +92,15 @@ export async function getTeacherHomeworks(id: number) {
 }
 
 export async function getHomeworkDetail(id: number) {
-  const conn = await sqlPool.getConnection();
-  const [rows] = await conn.execute(
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
     'SELECT title, assignment, time, deadline ' +
     'FROM homework ' +
     'WHERE id=?',
     [id]
   )
-  conn.release();
+  await conn.end();
+  
 
   return (rows as Array<HomeworkDetailRow>).length !== 0
     ? (rows as Array<HomeworkDetailRow>)[0]
@@ -108,14 +111,15 @@ export async function getStudentHomeworkDetail(hwid: number, stuid: number) {
   const hwDetail = await getHomeworkDetail(hwid)
   if (hwDetail === null) return null;
 
-  const conn = await sqlPool.getConnection();
-  const [rows] = await conn.execute(
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
     'SELECT content, time, completed, score, comment ' +
     'FROM homework_content ' +
     'WHERE studentID=? AND homeworkID=?',
     [stuid, hwid]
   );
-  conn.release();
+  await conn.end();
+  
   if ((rows as Array<HomeworkDetailContentRow>).length === 0) return null;
   const detailContentRow = (rows as Array<HomeworkDetailContentRow>)[0];
 
@@ -150,14 +154,14 @@ export async function getStudentHomeworkDetail(hwid: number, stuid: number) {
 export async function updateHomework(hwid: number, stuid: number, content: string) {
   const now = await getNowMySqlDateTime();
 
-  const conn = await sqlPool.getConnection();
-  const [rows] = await conn.execute(
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
     'UPDATE homework_content ' +
     'SET content=?, time=?, completed=1 ' +
     'WHERE studentID=? AND homeworkID=?',
     [content, now, stuid, hwid]
   );
-  conn.release();
+  await conn.end();
 
   return (rows as ResultSetHeader).affectedRows
 }
@@ -166,8 +170,8 @@ export async function getTeacherHomeworkDetail(hwid: number, tid: number) {
   const hwDetail = await getHomeworkDetail(hwid)
   if (hwDetail === null) return null;
 
-  const conn = await sqlPool.getConnection();
-  const [rows] = await conn.execute(
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
     'SELECT homework_content.id AS cid, student.`name`, homework_content.time, completed, content, score, comment ' +
     'FROM homework_content LEFT JOIN homework ' +
     'ON homework_content.homeworkID=homework.id ' +
@@ -175,7 +179,7 @@ export async function getTeacherHomeworkDetail(hwid: number, tid: number) {
     'WHERE teacherID=? AND homeworkID=?',
     [tid, hwid]
   );
-  conn.release();
+  await conn.end();
 
   if ((rows as Array<TeacherHomeworkDetailRow>).length === 0) return null;
   const detailContentRow = (rows as Array<TeacherHomeworkDetailRow>);
@@ -211,27 +215,39 @@ export async function getTeacherHomeworkDetail(hwid: number, tid: number) {
 }
 
 export async function setReject(hwid: number) {
-  const conn = await sqlPool.getConnection();
-  const [rows] = await conn.execute(
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
     'UPDATE homework_content ' +
     'SET completed=0, score=NULL ' +
     'WHERE homeworkID=?',
     [hwid]
   );
-  conn.release();
+  await conn.end();
 
   return (rows as ResultSetHeader).affectedRows
 }
 
 export async function updateJudge(cid: number, score: number, comment: string) {
-  const conn = await sqlPool.getConnection();
-  const [rows] = await conn.execute(
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
     'UPDATE homework_content ' +
     'SET score=?, comment=? ' +
     'WHERE id=?',
     [score, comment, cid]
   );
-  conn.release();
+  await conn.end();
+
+  return (rows as ResultSetHeader).affectedRows
+}
+
+export async function insertAssign(id: number, title: string, assignment: string, deadline: string) {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    'INSERT INTO homework (title, assignment, deadline, teacherID) ' +
+    'VALUES (?, ?, ?, ?) ',
+    [title, assignment, deadline, id]
+  );
+  await conn.end();
 
   return (rows as ResultSetHeader).affectedRows
 }
