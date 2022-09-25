@@ -1,5 +1,5 @@
 import { ResultSetHeader } from "mysql2";
-import { createMisConn, getNowMySqlDateTime, sqlPool } from "./mysql";
+import { getNowMySqlDateTime, sqlPool } from "./mysql";
 import parseMysqlDateTime from "./parseTime";
 import { StudentHomework, Homework, HomeworkDetailContent, HomeworkStudentDetail, HomeworkTeacherDetailContent, HomeworkTeacherDetail } from "./types";
 import { getNameByToken, getTeacherName } from "./user";

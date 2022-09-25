@@ -1,6 +1,6 @@
 import { UserType } from "./types";
 import { randomBytes } from 'crypto';
-import { createMisConn, sqlPool } from "./mysql";
+import { sqlPool } from "./mysql";
 
 type TokenRow = {
   token: string

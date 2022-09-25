@@ -1,4 +1,4 @@
-import { createMisConn, sqlPool } from "./mysql";
+import { sqlPool } from "./mysql";
 
 type nameRow = {
   name: string
