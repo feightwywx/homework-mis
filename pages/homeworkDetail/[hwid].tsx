@@ -8,7 +8,7 @@ import { useMediaPredicate } from "react-media-hook";
 import useUser from '../../utils/hooks/useUser';
 import { HomeworkDetail, HomeworkDetailContent, HomeworkStudentDetail, HomeworkTeacherDetail, HomeworkTeacherDetailContent } from '../../utils/types';
 import React, { useEffect, useRef, useState } from 'react';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import parseMysqlDateTime from '../../utils/parseTime';
 import { ColumnsType } from 'antd/lib/table';
 
@@ -72,7 +72,14 @@ export function CommonDetail({ content: detail }: { content: HomeworkDetail }) {
   </>)
 }
 
-export function StudentDetail({ content, dead = false, hwid }: { content: HomeworkDetailContent, dead: boolean, hwid: number }) {
+export function StudentDetail({
+  content, dead = false, hwid, teacher = false
+}: {
+  content: HomeworkDetailContent | HomeworkTeacherDetailContent,
+  dead?: boolean,
+  hwid: number,
+  teacher?: boolean
+}) {
   const [modalOpen, setModalOpen] = useState(false);
   const [accContent, setAccContent] = useState('');
   const [confirmLoading, setConfirmLoading] = useState(false)
@@ -89,7 +96,6 @@ export function StudentDetail({ content, dead = false, hwid }: { content: Homewo
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: accContent })
     }).then(res => {
-      console.log(res);
       setConfirmLoading(false);
       setModalOpen(false);
     }).catch(err => {
@@ -103,24 +109,34 @@ export function StudentDetail({ content, dead = false, hwid }: { content: Homewo
     <>
       <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
         <div>
-          <Title level={2} style={{ float: 'left' }}>我的提交</Title>
-          <Button
-            type='primary'
-            shape='round'
-            icon={<FormOutlined />}
-            style={{ float: 'right', marginTop: 8 }}
-            disabled={content.completed || dead}
-            onClick={() => { setModalOpen(true); }}
-          >提交作业</Button>
+          <Title level={2} style={{ float: 'left' }}>
+            {!teacher ? '我的提交' : `${(content as HomeworkTeacherDetailContent).studentName}的提交内容`}
+          </Title>
+          {
+            !teacher &&
+            <Button
+              type='primary'
+              shape='round'
+              icon={<FormOutlined />}
+              style={{ float: 'right', marginTop: 8 }}
+              disabled={content.completed || dead}
+              onClick={() => { setModalOpen(true); }}
+            >
+              提交作业
+            </Button>
+          }
+
         </div>
         {(!content.completed && !content.accomplishment?.content && !dead)
-          && <Paragraph>目前还没有提交过这项作业。点击右上角的按钮来提交吧。</Paragraph>}
+          && <Paragraph>{!teacher ? '目前还没有提交过这项作业。点击右上角的按钮来提交吧。' : '该学生没有提交这项作业。'}</Paragraph>}
         {(!content.completed && !content.accomplishment?.content && dead)
-          && <Paragraph>这项作业已经过期，无法提交！</Paragraph>}
+          && <Paragraph>{!teacher ? '这项作业已经过期，无法提交！': '该学生没有提交这项作业。'}</Paragraph>}
         {content.accomplishment?.content
           && <div>
             <Title level={3} style={{ float: 'left', marginBottom: 0 }}>提交内容</Title>
-            <Paragraph style={{ float: 'right', marginTop: 6 }}>{matches && '提交时间：'}{parseMysqlDateTime(content.accomplishment.time).toLocaleString()}</Paragraph>
+            <Paragraph style={{ float: 'right', marginTop: 6 }}>
+              {matches && '提交时间：'}{parseMysqlDateTime(content.accomplishment.time).toLocaleString()}
+            </Paragraph>
           </div>}
         <Paragraph>
           {/* FIXME: 换行渲染不出来 */}
@@ -135,16 +151,24 @@ export function StudentDetail({ content, dead = false, hwid }: { content: Homewo
                 <div>
                   <Title level={3} style={{ float: 'left' }}>得分</Title>
                   <Text style={{ float: 'right', fontSize: 18 }}>/100</Text>
-                  <Text style={{ float: 'right', fontSize: 18 }} type='success'>{content.judge.score}</Text>
+                  <Text
+                  style={{ float: 'right', fontSize: 18 }}
+                  type={content.judge.score
+                    ? 'success'
+                  : (content.judge.comment
+                  ? 'warning'
+                  : 'danger')}>
+                    {content.judge.score ?? (content.judge.comment && '已打回')}
+                    </Text>
                 </div>
                 <Title level={3} style={{ float: 'left', marginBottom: 0 }}>评语</Title>
                 <Paragraph>
                   {content.judge?.comment ?
                     content.judge.comment :
-                    '老师没有留下评语哦～'}
+                    (!teacher ? '老师没有留下评语哦～' : '没有留下评语。')}
                 </Paragraph>
               </> :
-              <Paragraph>老师还没有批阅你的作业，请耐心等待。</Paragraph>}
+              <Paragraph>{!teacher ? '老师还没有批阅你的作业，请耐心等待。' : '还没有批阅这项作业。'}</Paragraph>}
           </>}
       </Space>
       <Modal
@@ -182,25 +206,30 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
     '已评分': 'lime'
   } as { [x: string]: string }
 
+  const router = useRouter();
+
   const [judgeModalOpen, setJudgeModalOpen] = useState(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [currentDetail, setCurrentDetail] = useState({} as HomeworkTeacherDetailContent)
   const [confirmJudgeLoading, setConfirmJudgeLoading] = useState(false);
-  const [currentContent, setCurrentContent] = useState(0);
+  const [currentContentId, setCurrentContentId] = useState(0);
 
   const [form] = Form.useForm();
 
-  const onCreate = (values: {
+  const judgeClickHandler = (values: {
     score: number, comment?: string
   }) => {
     setConfirmJudgeLoading(true);
 
-    fetch(`/api/homework/teacher/judge/${currentContent}`, {
+    fetch(`/api/homework/teacher/judge/${currentContentId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ score: values.score, comment: values.comment })
     }).then(res => {
-      console.log(res);
+      router.reload();
       setConfirmJudgeLoading(false);
       setJudgeModalOpen(false);
+      setDetailModalOpen(false);
     }).catch(err => {
       console.error(err)
     })
@@ -211,7 +240,7 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     }).then(res => {
-      console.log(res);
+      router.reload();
     }).catch(err => {
       console.error(err);
     })
@@ -280,11 +309,30 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
             key: 'action',
             render: (_, record) => (
               <Space size='small'>
-                {/* TODO: 查看Modal框，可链接到详情 */}
+                <Button
+                  type='link'
+                  onClick={() => {
+                    const promise = new Promise<HomeworkTeacherDetailContent>((resolve, reject) => {
+                      const curr = content.filter((item) => (item.contentId === record.key))[0]
+                      if (curr) {
+                        resolve(curr);
+                      } else {
+                        reject();
+                      }
+
+                    })
+                    promise.then((data: HomeworkTeacherDetailContent) => {
+                      setCurrentContentId(data.contentId)
+                      setCurrentDetail(data as HomeworkTeacherDetailContent);
+                      setDetailModalOpen(true);
+                    })
+                  }}>
+                  查看
+                </Button>
                 <Button
                   type='link'
                   disabled={record.status.includes('未完成') || record.status.includes('已打回')}
-                  onClick={() => { setJudgeModalOpen(true); setCurrentContent(record.key); }}>
+                  onClick={() => { setJudgeModalOpen(true); setCurrentContentId(record.key); }}>
                   批阅
                 </Button>
                 <Button
@@ -299,7 +347,7 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
     </Space>
     <Modal
       open={judgeModalOpen}
-      title='作业提交'
+      title='作业批阅'
       onCancel={() => { setJudgeModalOpen(false); }}
       width={'80vw'}
       confirmLoading={confirmJudgeLoading}
@@ -308,7 +356,7 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
           .validateFields()
           .then(values => {
             form.resetFields();
-            onCreate(values);
+            judgeClickHandler(values);
           })
           .catch(info => {
             console.log('Validate Failed:', info);
@@ -344,6 +392,21 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
         </Form.Item>
 
       </Form>
+    </Modal>
+    <Modal
+      open={detailModalOpen}
+      title='作业详情'
+      onCancel={() => { setDetailModalOpen(false); setJudgeModalOpen(false); }}
+      width={'80vw'}
+      onOk={() => {
+        setJudgeModalOpen(true);
+      }}
+      okText='批阅'
+      okButtonProps={{
+        disabled: !currentDetail.completed
+      }}
+    >
+      <StudentDetail content={currentDetail} hwid={1} teacher={true} />
     </Modal>
   </>)
 }

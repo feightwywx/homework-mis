@@ -15,7 +15,7 @@ export async function getNameByToken(usertype: string, token: string) {
   const [rows] = await conn.execute(
     selectQuery, [token]
   )
-  conn.release()
+  conn.release();
 
   if ((rows as Array<nameRow>).length === 0) {
     return null;
@@ -32,7 +32,7 @@ export async function getId(usertype: string, token: string) {
   const [rows] = await conn.execute(
     selectQuery, [token]
   )
-  conn.release()
+  conn.release();
 
   if ((rows as Array<idRow>).length === 0) {
     return null;
@@ -46,7 +46,7 @@ export async function getTeacherName(id: number) {
   const [rows] = await conn.execute(
     `SELECT name FROM teacher WHERE id=?`, [id]
   )
-  conn.release()
+  conn.release();
 
   if ((rows as Array<nameRow>).length === 0) {
     return null;

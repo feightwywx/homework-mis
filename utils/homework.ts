@@ -192,7 +192,7 @@ export async function getTeacherHomeworkDetail(hwid: number, tid: number) {
       }
 
       let judge = undefined;
-      if (item.score) {
+      if (item.score || item.comment) {
         judge = {
           score: item.score,
           comment: item.comment
