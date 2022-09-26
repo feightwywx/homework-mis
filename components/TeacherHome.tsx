@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import Item from 'antd/lib/list/Item';
 import { DefaultOptionType } from 'antd/lib/select';
+import { Key } from 'antd/lib/table/interface';
 
 const { Text, Title } = Typography
 
@@ -37,7 +38,7 @@ export function TeacherHome(): JSX.Element {
   // 获取班级
   const [treeData, setTreeData] = useState<Omit<DefaultOptionType, 'label'>[]>([]);
   const { data: classNames } = useSWR<Array<{ class: string }>>(treeData.length === 0 ? '/api/user/class' : null);
-  
+
   useEffect(() => {
     if (classNames) {
       setTreeData(classNames.map((item, index) => ({
@@ -102,6 +103,23 @@ export function TeacherHome(): JSX.Element {
     }).catch(err => {
       console.error(err)
     })
+  }
+
+  // FIXME: 展开项目无法折叠
+  const [treeExpandedKeys, setTreeExpandedKeys] = useState<Key[]>([]);
+
+  function onTreeChange(checkedValues: string[]) {
+    console.log('checked values: ', checkedValues);
+    console.log('expand keys', treeExpandedKeys)
+    const expand = checkedValues.filter((value, index) => {
+      return treeData.find(item => item.key === value)?.pId === 0
+    })
+
+    setTreeExpandedKeys(treeExpandedKeys.length === 0 ? expand : treeExpandedKeys.concat(expand));
+  }
+
+  function onTreeExpand(expand: Key[]){
+    setTreeExpandedKeys(treeExpandedKeys.length === 0 ? expand : treeExpandedKeys.concat(expand));
   }
 
   return (
@@ -186,6 +204,7 @@ export function TeacherHome(): JSX.Element {
         title='作业布置'
         onCancel={() => { setModalOpen(false); }}
         width={'80vw'}
+        style={{ minHeight: '80vh' }}
         confirmLoading={confirmLoading}
         onOk={() => {
           form
@@ -245,6 +264,10 @@ export function TeacherHome(): JSX.Element {
               treeData={treeData}
               treeCheckable
               loadData={onLoadData}
+              treeExpandAction='click'
+              onChange={onTreeChange}
+              treeExpandedKeys={treeExpandedKeys}
+              onTreeExpand={onTreeExpand}
             />
           </Form.Item>
         </Form>
