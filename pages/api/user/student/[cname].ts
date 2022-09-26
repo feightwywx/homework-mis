@@ -1,10 +1,12 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
-import { getTeacherHomeworks } from "../../../../utils/homework";
 import { sessionOptions } from "../../../../utils/session";
-import { getId } from "../../../../utils/user";
+import { getId, getStudentByClass } from "../../../../utils/user";
 
-async function teacherMyRoute(req: NextApiRequest, res: NextApiResponse) {
+async function classRoute(req: NextApiRequest, res: NextApiResponse) {
+  const { cname } = req.query;
+  if (!(typeof cname === 'string')) { res.status(404).end(); return; }
+
   let token = undefined;
   if (req.session.user?.token) {
     token = req.session.user?.token
@@ -12,13 +14,12 @@ async function teacherMyRoute(req: NextApiRequest, res: NextApiResponse) {
     token = await req.body.token;
   }
   const id = await getId('teacher', token);
-
   if (id) {
-    res.json(await getTeacherHomeworks(id))
+    res.json(await getStudentByClass(cname))
   } else {
-    res.json({ success: -1 });
+    res.status(401).end();
   }
 
 }
 
-export default withIronSessionApiRoute(teacherMyRoute, sessionOptions);
+export default withIronSessionApiRoute(classRoute, sessionOptions);

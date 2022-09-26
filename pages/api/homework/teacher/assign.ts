@@ -1,11 +1,11 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
-import { insertAssign } from "../../../../utils/homework";
+import { insertAssign, insertTarget } from "../../../../utils/homework";
 import { sessionOptions } from "../../../../utils/session";
 import { getId } from "../../../../utils/user";
 
 async function teacherAssignRoute(req: NextApiRequest, res: NextApiResponse) {
-  const { title, assignment, deadline } = await req.body;
+  const { title, assignment, deadline, target } = await req.body;
 
   let token = undefined;
   if (req.session.user?.token) {
@@ -21,8 +21,17 @@ async function teacherAssignRoute(req: NextApiRequest, res: NextApiResponse) {
     return;
   };
 
-  const result = await insertAssign(+id, title, assignment, deadline);
-  res.json({ success: result });
+  const hwid = await insertAssign(+id, title, assignment, deadline);
+  if (hwid) {
+    let result = 0;
+    (target as number[]).forEach(async value => {
+      result += await insertTarget(hwid, value)
+    })
+    res.json({ success: result });
+  } else {
+    res.status(500).end();
+  }
+  
 }
 
 export default withIronSessionApiRoute(teacherAssignRoute, sessionOptions)

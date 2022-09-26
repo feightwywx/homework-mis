@@ -1,57 +1,21 @@
-import { Button, Col, DatePicker, Divider, Form, Input, Modal, Row, Space, Typography, TreeSelect } from 'antd';
+import { Button, Col, DatePicker, Divider, Form, Input, Modal, Row, Space, Typography, TreeSelect, TreeSelectProps } from 'antd';
 import { FormOutlined } from '@ant-design/icons';
 import HwLayout from './layout';
 import useUser from '../utils/hooks/useUser';
 import { useTeacherHomework } from '../utils/hooks/useHomework';
 import parseMysqlDateTime from '../utils/parseTime';
 import { HomeworkCard } from './HomeworkCard';
-import { ReactEventHandler, useState } from 'react';
+import { ReactEventHandler, useEffect, useState } from 'react';
 import moment, { Moment } from 'moment';
 import { RangePickerProps } from 'antd/lib/date-picker';
 import { useRouter } from 'next/router';
+import useSWR from 'swr';
+import Item from 'antd/lib/list/Item';
+import { DefaultOptionType } from 'antd/lib/select';
 
 const { Text, Title } = Typography
 
 const { TextArea } = Input
-
-const { SHOW_PARENT } = TreeSelect;
-
-const treeData = [
-  {
-    title: 'Node1',
-    value: '0-0',
-    key: '0-0',
-    children: [
-      {
-        title: 'Child Node1',
-        value: '0-0-0',
-        key: '0-0-0',
-      },
-    ],
-  },
-  {
-    title: 'Node2',
-    value: '0-1',
-    key: '0-1',
-    children: [
-      {
-        title: 'Child Node3',
-        value: '0-1-0',
-        key: '0-1-0',
-      },
-      {
-        title: 'Child Node4',
-        value: '0-1-1',
-        key: '0-1-1',
-      },
-      {
-        title: 'Child Node5',
-        value: '0-1-2',
-        key: '0-1-2',
-      },
-    ],
-  },
-];
 
 export function TeacherHome(): JSX.Element {
   const { user } = useUser();
@@ -70,30 +34,74 @@ export function TeacherHome(): JSX.Element {
     return current && current < moment().startOf('day');
   };
 
+  // 获取班级
+  const [treeData, setTreeData] = useState<Omit<DefaultOptionType, 'label'>[]>([]);
+  const { data: classNames } = useSWR<Array<{ class: string }>>(treeData.length === 0 ? '/api/user/class' : null);
+  
+  useEffect(() => {
+    if (classNames) {
+      setTreeData(classNames.map((item, index) => ({
+        id: ++index,
+        pId: 0,
+        key: item.class,
+        value: item.class,
+        title: item.class,
+        isLeaf: false
+      })))
+    }
+  }, [classNames])
+
+  function genNode(id: number, item: { id: number, name: string }) {
+    return {
+      id: Math.random().toString(36).substring(2, 6),
+      pId: id,
+      key: item.id,
+      value: item.id,
+      title: item.name,
+      isLeaf: true
+    }
+  }
+
+  const onLoadData: TreeSelectProps['loadData'] = ({ id, value }) => (
+    fetch(`/api/user/student/${value}`, {
+      method: 'POST'
+    }).then(res =>
+      res.json()
+    ).then(json => {
+      const childNodes = (json as { id: number, name: string }[]).map((item, index) => (
+        genNode(id, item)
+      ))
+      setTreeData(treeData.concat(childNodes));
+    })
+  )
+
+
   async function assignClickHandler(values: {
     title: string,
     assignment: string,
-    deadline: Moment
+    deadline: Moment,
+    target: number[]
   }) {
     const deadline = values.deadline.format('YYYY-MM-DD HH:mm:ss');
     console.log(values);
-    // setConfirmLoading(true);
-
-    // fetch(`/api/homework/teacher/assign`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     title: values.title,
-    //     assignment: values.assignment,
-    //     deadline: deadline
-    //   })
-    // }).then(res => {
-    //   setConfirmLoading(false);
-    //   setModalOpen(false);
-    //   // router.reload();
-    // }).catch(err => {
-    //   console.error(err)
-    // })
+    setConfirmLoading(true);
+    // TODO: 插入target为班级时的处理
+    fetch(`/api/homework/teacher/assign`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: values.title,
+        assignment: values.assignment,
+        deadline: deadline,
+        target: values.target
+      })
+    }).then(res => {
+      setConfirmLoading(false);
+      setModalOpen(false);
+      // router.reload();
+    }).catch(err => {
+      console.error(err)
+    })
   }
 
   return (
@@ -232,12 +240,13 @@ export function TeacherHome(): JSX.Element {
             rules={[{
               required: true,
             }]}>
-              <TreeSelect
+            <TreeSelect
+              treeDataSimpleMode
               treeData={treeData}
               treeCheckable
-              showCheckedStrategy={SHOW_PARENT}
-               />
-            </Form.Item>
+              loadData={onLoadData}
+            />
+          </Form.Item>
         </Form>
       </Modal>
     </HwLayout>);

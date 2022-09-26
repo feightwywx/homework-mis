@@ -8,6 +8,15 @@ type idRow = {
   id: number
 }
 
+type classRow = {
+  class: string
+}
+
+type studentRow = {
+  id: number,
+  name: string
+}
+
 export async function getNameByToken(usertype: string, token: string) {
   const selectQuery = `SELECT name FROM ${usertype} WHERE token=?`
 
@@ -54,4 +63,24 @@ export async function getTeacherName(id: number) {
     return (rows as Array<nameRow>)[0].name;
   }
 
+}
+
+export async function getAllClasses() {
+  const conn = await createMisConnection()
+  const [rows] = await conn.query(
+    `SELECT DISTINCT class FROM student`
+  )
+  await conn.end();
+
+  return (rows as Array<classRow>)
+}
+
+export async function getStudentByClass(className: string) {
+  const conn = await createMisConnection()
+  const [rows] = await conn.query(
+    'SELECT id, name FROM student WHERE class=?', [className]
+  )
+  await conn.end();
+
+  return (rows as Array<studentRow>)
 }
