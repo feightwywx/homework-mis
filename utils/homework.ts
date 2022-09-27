@@ -50,8 +50,9 @@ export async function getStudentHomeworks(id: number) {
   const conn = await createMisConnection();
   const [rows] = await conn.query(
     'SELECT homework.id, title, assignment, homework.time, deadline, completed, teacher.name ' +
-    'FROM homework JOIN homework_content JOIN teacher ' +
-    'ON homework.id=homework_content.id AND homework.teacherID=teacher.id ' +
+    'FROM homework_content ' +
+    'LEFT JOIN homework ON homework.id=homework_content.homeworkID ' +
+    'LEFT JOIN teacher ON homework.teacherID=teacher.id ' +
     'WHERE studentID=?',
     [id]
   )
