@@ -2,12 +2,14 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
 import { setReject } from "../../../../../utils/homework";
 import { sessionOptions } from "../../../../../utils/session";
-import { getId } from "../../../../../utils/user";
+import { getId, getStudentId } from "../../../../../utils/user";
 
 async function teacherRejectRoute(req: NextApiRequest, res: NextApiResponse) {
   const { hwid } = req.query;
+  const { studentName } = await req.body;
+  const stuid = await getStudentId(studentName);
 
-  if (!hwid) {
+  if (!hwid || !stuid) {
     res.status(500).end();
     return;
   }
@@ -26,7 +28,7 @@ async function teacherRejectRoute(req: NextApiRequest, res: NextApiResponse) {
     return;
   }
 
-  const result = await setReject(+hwid);
+  const result = await setReject(+hwid, stuid);
   res.json({success: result});
 }
 

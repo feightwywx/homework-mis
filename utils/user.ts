@@ -50,6 +50,20 @@ export async function getId(usertype: string, token: string) {
   }
 }
 
+export async function getStudentId(name: string) {
+  const conn = await createMisConnection()
+  const [rows] = await conn.query(
+    `SELECT id FROM student WHERE name=?`, [name]
+  )
+  await conn.end();
+
+  if ((rows as Array<idRow>).length === 0) {
+    return null;
+  } else {
+    return (rows as Array<idRow>)[0].id;
+  }
+}
+
 export async function getTeacherName(id: number) {
   const conn = await createMisConnection()
   const [rows] = await conn.query(
@@ -62,7 +76,6 @@ export async function getTeacherName(id: number) {
   } else {
     return (rows as Array<nameRow>)[0].name;
   }
-
 }
 
 export async function getAllClasses() {

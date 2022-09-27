@@ -212,13 +212,13 @@ export async function getTeacherHomeworkDetail(hwid: number, tid: number) {
   }
 }
 
-export async function setReject(hwid: number) {
+export async function setReject(hwid: number, stuid: number) {
   const conn = await createMisConnection();
   const [rows] = await conn.query(
     'UPDATE homework_content ' +
     'SET completed=0, score=NULL ' +
-    'WHERE homeworkID=?',
-    [hwid]
+    'WHERE homeworkID=? AND studentID=?',
+    [hwid, stuid]
   );
   await conn.end();
 

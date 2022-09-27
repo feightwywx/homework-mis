@@ -1,4 +1,3 @@
-import React from "react";
 import useSWR from "swr";
 import { Homework, StudentHomework } from "../types";
 

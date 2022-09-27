@@ -82,7 +82,7 @@ export function StudentDetail({
   const [modalOpen, setModalOpen] = useState(false);
   const [accContent, setAccContent] = useState('');
   const [confirmLoading, setConfirmLoading] = useState(false);
-  
+
   const router = useRouter()
 
   function accFieldHandler(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -131,7 +131,7 @@ export function StudentDetail({
         {(!content.completed && !content.accomplishment?.content && !dead)
           && <Paragraph>{!teacher ? '目前还没有提交过这项作业。点击右上角的按钮来提交吧。' : '该学生没有提交这项作业。'}</Paragraph>}
         {(!content.completed && !content.accomplishment?.content && dead)
-          && <Paragraph>{!teacher ? '这项作业已经过期，无法提交！': '该学生没有提交这项作业。'}</Paragraph>}
+          && <Paragraph>{!teacher ? '这项作业已经过期，无法提交！' : '该学生没有提交这项作业。'}</Paragraph>}
         {content.accomplishment?.content
           && <div>
             <Title level={3} style={{ float: 'left', marginBottom: 0 }}>提交内容</Title>
@@ -153,14 +153,14 @@ export function StudentDetail({
                   <Title level={3} style={{ float: 'left' }}>得分</Title>
                   <Text style={{ float: 'right', fontSize: 18 }}>/100</Text>
                   <Text
-                  style={{ float: 'right', fontSize: 18 }}
-                  type={content.judge.score
-                    ? 'success'
-                  : (content.judge.comment
-                  ? 'warning'
-                  : 'danger')}>
+                    style={{ float: 'right', fontSize: 18 }}
+                    type={content.judge.score
+                      ? 'success'
+                      : (content.judge.comment
+                        ? 'warning'
+                        : 'danger')}>
                     {content.judge.score ?? (content.judge.comment && '已打回')}
-                    </Text>
+                  </Text>
                 </div>
                 <Title level={3} style={{ float: 'left', marginBottom: 0 }}>评语</Title>
                 <Paragraph>
@@ -236,10 +236,13 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
     })
   };
 
-  function rejectClickHandler() {
+  function rejectClickHandler(studentName: string) {
     fetch(`/api/homework/teacher/reject/${hwid}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        studentName
+      })
     }).then(() => {
       router.reload();
     }).catch(err => {
@@ -339,7 +342,9 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
                 <Button
                   type='link'
                   disabled={record.status.includes('未完成') || record.status.includes('已打回')}
-                  onClick={rejectClickHandler}>
+                  onClick={() => {
+                    rejectClickHandler(record.name);
+                  }}>
                   打回
                 </Button>
               </Space>
