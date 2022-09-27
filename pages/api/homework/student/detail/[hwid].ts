@@ -10,7 +10,7 @@ async function studentDetailRoute(req: NextApiRequest, res: NextApiResponse) {
   if (!hwid) {
     res.status(500).end();
     return;
-  };
+  }
 
   let token = undefined;
   if (req.session.user?.token) {
@@ -24,7 +24,7 @@ async function studentDetailRoute(req: NextApiRequest, res: NextApiResponse) {
   if (!id) {
     res.status(401).end();
     return;
-  };
+  }
 
   const result = await getStudentHomeworkDetail(+hwid, id);
   res.json(result);

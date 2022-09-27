@@ -3,25 +3,24 @@ import { useRouter } from 'next/router';
 import HwLayout from '../../components/layout';
 import { Typography, Space, Button, Divider, Tag, Modal, Input, Table, Form, InputNumber } from 'antd';
 import { ArrowLeftOutlined, FormOutlined } from '@ant-design/icons';
-import Link from 'next/link';
 import { useMediaPredicate } from "react-media-hook";
 import useUser from '../../utils/hooks/useUser';
 import { HomeworkDetail, HomeworkDetailContent, HomeworkStudentDetail, HomeworkTeacherDetail, HomeworkTeacherDetailContent } from '../../utils/types';
-import React, { useEffect, useRef, useState } from 'react';
-import useSWR, { useSWRConfig } from 'swr';
+import React, { useState } from 'react';
+import useSWR from 'swr';
 import parseMysqlDateTime from '../../utils/parseTime';
 import { ColumnsType } from 'antd/lib/table';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
-function HomeworkDetail() {
+function HomeworkDetailPage() {
   const router = useRouter();
   const { hwid } = router.query;
 
   const { user } = useUser();
 
-  const { data, error } = useSWR(`/api/homework/${user?.userType}/detail/${hwid}`);
+  const { data } = useSWR(`/api/homework/${user?.userType}/detail/${hwid}`);
 
   const detail = (data as HomeworkStudentDetail)?.detail;
   const content = (data as HomeworkStudentDetail)?.content;
@@ -82,8 +81,7 @@ export function StudentDetail({
 }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [accContent, setAccContent] = useState('');
-  const [confirmLoading, setConfirmLoading] = useState(false)
-  const router = useRouter();
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   function accFieldHandler(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setAccContent(e.target.value);
@@ -95,7 +93,7 @@ export function StudentDetail({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: accContent })
-    }).then(res => {
+    }).then(() => {
       setConfirmLoading(false);
       setModalOpen(false);
     }).catch(err => {
@@ -225,7 +223,7 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ score: values.score, comment: values.comment })
-    }).then(res => {
+    }).then(() => {
       router.reload();
       setConfirmJudgeLoading(false);
       setJudgeModalOpen(false);
@@ -235,11 +233,11 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
     })
   };
 
-  function rejectClickHandler(e: React.MouseEvent<HTMLButtonElement>) {
+  function rejectClickHandler() {
     fetch(`/api/homework/teacher/reject/${hwid}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-    }).then(res => {
+    }).then(() => {
       router.reload();
     }).catch(err => {
       console.error(err);
@@ -250,7 +248,7 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
     <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
       <Title level={2}>已提交</Title>
       <Table
-        dataSource={content.map((item, index) => {
+        dataSource={content.map((item) => {
           let status = [];
           if (item.completed) {
             status.push('已完成')
@@ -411,4 +409,4 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
   </>)
 }
 
-export default HomeworkDetail as NextPage;
+export default HomeworkDetailPage as NextPage;

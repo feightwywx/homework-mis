@@ -1,8 +1,6 @@
 import { ResultSetHeader } from "mysql2";
 import { getNowMySqlDateTime, createMisConnection } from "./mysql";
-import parseMysqlDateTime from "./parseTime";
-import { StudentHomework, Homework, HomeworkDetailContent, HomeworkStudentDetail, HomeworkTeacherDetailContent, HomeworkTeacherDetail } from "./types";
-import { getNameByToken, getTeacherName } from "./user";
+import { StudentHomework, Homework, HomeworkDetailContent, HomeworkStudentDetail, HomeworkTeacherDetailContent } from "./types";
 
 type StudentHomeworkRow = {
   id: number;
@@ -186,7 +184,7 @@ export async function getTeacherHomeworkDetail(hwid: number, tid: number) {
 
   return {
     detail: hwDetail,
-    content: detailContentRow.map((item, index) => {
+    content: detailContentRow.map((item) => {
       let accomplishment = undefined;
       if (item.time && item.content) {
         accomplishment = {

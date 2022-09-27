@@ -19,7 +19,7 @@ async function teacherAssignRoute(req: NextApiRequest, res: NextApiResponse) {
   if (!id) {
     res.status(401).end();
     return;
-  };
+  }
 
   const hwid = await insertAssign(+id, title, assignment, deadline);
   if (hwid) {

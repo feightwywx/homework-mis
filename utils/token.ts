@@ -27,7 +27,7 @@ export async function getToken(username: string, password: string, usertype: Use
     } else {                                            // token不存在，生成token存入数据库
       const newToken = await generateToken();  
       const conn = await createMisConnection();         // 然后返回新的token
-      const [] = await conn.query(
+      await conn.query(
         updateQuery, [newToken, username]
       )
       await conn.end();

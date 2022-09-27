@@ -1,11 +1,12 @@
-import { Avatar, Breadcrumb, Dropdown, Layout, Menu, Space } from 'antd';
+import { Avatar, Dropdown, Layout, Menu, Space } from 'antd';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
 import { useMediaPredicate } from "react-media-hook";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styles from '../styles/Layout.module.css';
 import useUser from '../utils/hooks/useUser';
 import fetchJson from '../utils/fetchJson';
+import Link from 'next/link';
 
 const { Header, Content, Footer } = Layout
 
@@ -34,9 +35,9 @@ export default function HwLayout({ children }: { children: React.ReactNode }): J
                 {
                   key: 'home',
                   label: (
-                    <a href="/">
+                    <Link href="/">
                       首页
-                    </a>
+                    </Link>
                   )
                 }
               ]

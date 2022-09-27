@@ -5,12 +5,10 @@ import useUser from '../utils/hooks/useUser';
 import { useTeacherHomework } from '../utils/hooks/useHomework';
 import parseMysqlDateTime from '../utils/parseTime';
 import { HomeworkCard } from './HomeworkCard';
-import { ReactEventHandler, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import moment, { Moment } from 'moment';
 import { RangePickerProps } from 'antd/lib/date-picker';
-import { useRouter } from 'next/router';
 import useSWR from 'swr';
-import Item from 'antd/lib/list/Item';
 import { DefaultOptionType } from 'antd/lib/select';
 import { Key } from 'antd/lib/table/interface';
 
@@ -20,7 +18,6 @@ const { TextArea } = Input
 
 export function TeacherHome(): JSX.Element {
   const { user } = useUser();
-  const router = useRouter()
 
   const { homework } = useTeacherHomework();
 
@@ -69,7 +66,7 @@ export function TeacherHome(): JSX.Element {
     }).then(res =>
       res.json()
     ).then(json => {
-      const childNodes = (json as { id: number, name: string }[]).map((item, index) => (
+      const childNodes = (json as { id: number, name: string }[]).map((item) => (
         genNode(id, item)
       ))
       setTreeData(treeData.concat(childNodes));
@@ -96,7 +93,7 @@ export function TeacherHome(): JSX.Element {
         deadline: deadline,
         target: values.target
       })
-    }).then(res => {
+    }).then(() => {
       setConfirmLoading(false);
       setModalOpen(false);
       // router.reload();
@@ -111,7 +108,7 @@ export function TeacherHome(): JSX.Element {
   function onTreeChange(checkedValues: string[]) {
     console.log('checked values: ', checkedValues);
     console.log('expand keys', treeExpandedKeys)
-    const expand = checkedValues.filter((value, index) => {
+    const expand = checkedValues.filter((value) => {
       return treeData.find(item => item.key === value)?.pId === 0
     })
 

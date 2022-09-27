@@ -21,7 +21,7 @@ function Login() {
     } catch (e) {
       console.error(e)
     }
-  };
+  }
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('验证失败', errorInfo);

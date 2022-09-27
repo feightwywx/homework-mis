@@ -1,10 +1,10 @@
-import { createPool, Pool, createConnection } from 'mysql2/promise';
+import { createConnection } from 'mysql2/promise';
 
 export async function createMisConnection() {
   return createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
     database: 'homework_mis',
   })
 }

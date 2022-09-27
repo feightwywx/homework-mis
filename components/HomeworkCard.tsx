@@ -4,7 +4,6 @@ import { UserOutlined } from '@ant-design/icons';
 import parseMysqlDateTime from '../utils/parseTime';
 import { Homework, StudentHomework } from '../utils/types';
 import Link from 'next/link';
-import useUser from '../utils/hooks/useUser';
 
 const { Text } = Typography
 
@@ -12,8 +11,6 @@ export function HomeworkCard({ homework }: { homework: Homework | StudentHomewor
   const time = parseMysqlDateTime(homework.time)
   const deadline = parseMysqlDateTime(homework.deadline);
   const currtime = new Date(Date.now())
-
-  const { user } = useUser()
 
   return (
     <Card title={

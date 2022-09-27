@@ -11,7 +11,7 @@ async function teacherJudgeRoute(req: NextApiRequest, res: NextApiResponse) {
   if (!cid) {
     res.status(500).end();
     return;
-  };
+  }
 
   let token = undefined;
   if (req.session.user?.token) {
@@ -25,7 +25,7 @@ async function teacherJudgeRoute(req: NextApiRequest, res: NextApiResponse) {
   if (!id) {
     res.status(401).end();
     return;
-  };
+  }
 
   const result = await updateJudge(+cid, +score, comment);
   res.json({success: result});
