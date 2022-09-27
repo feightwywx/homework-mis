@@ -82,6 +82,8 @@ export function StudentDetail({
   const [modalOpen, setModalOpen] = useState(false);
   const [accContent, setAccContent] = useState('');
   const [confirmLoading, setConfirmLoading] = useState(false);
+  
+  const router = useRouter()
 
   function accFieldHandler(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setAccContent(e.target.value);
@@ -96,6 +98,7 @@ export function StudentDetail({
     }).then(() => {
       setConfirmLoading(false);
       setModalOpen(false);
+      router.reload();
     }).catch(err => {
       console.error(err)
     })
@@ -356,8 +359,7 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
             form.resetFields();
             judgeClickHandler(values);
           })
-          .catch(info => {
-            console.log('Validate Failed:', info);
+          .catch(() => {
           });
       }}
     >

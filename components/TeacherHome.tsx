@@ -11,6 +11,7 @@ import { RangePickerProps } from 'antd/lib/date-picker';
 import useSWR from 'swr';
 import { DefaultOptionType } from 'antd/lib/select';
 import { Key } from 'antd/lib/table/interface';
+import { useRouter } from 'next/router';
 
 const { Text, Title } = Typography
 
@@ -18,6 +19,8 @@ const { TextArea } = Input
 
 export function TeacherHome(): JSX.Element {
   const { user } = useUser();
+
+  const router = useRouter()
 
   const { homework } = useTeacherHomework();
 
@@ -81,9 +84,22 @@ export function TeacherHome(): JSX.Element {
     target: number[]
   }) {
     const deadline = values.deadline.format('YYYY-MM-DD HH:mm:ss');
-    console.log(values);
     setConfirmLoading(true);
-    // TODO: 插入target为班级时的处理
+    let studentList = [] as number[]
+    values.target.forEach(item => {
+      if (isNaN(+item)) {
+        const filtered = treeData.filter(node => node.key === item)[0];
+        if (filtered && filtered.length !== 0) {
+          const pid = filtered.id;
+          const studentNodes = treeData.filter(node => node.pId === pid);
+          const studentIdsOfClass = studentNodes.map(item => item.value);
+          studentList = studentList.concat(studentIdsOfClass);
+        } 
+      } else {
+        studentList.push(item);
+      }
+    })
+  
     fetch(`/api/homework/teacher/assign`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -91,12 +107,12 @@ export function TeacherHome(): JSX.Element {
         title: values.title,
         assignment: values.assignment,
         deadline: deadline,
-        target: values.target
+        target: studentList
       })
     }).then(() => {
       setConfirmLoading(false);
       setModalOpen(false);
-      // router.reload();
+      router.reload();
     }).catch(err => {
       console.error(err)
     })
@@ -106,8 +122,6 @@ export function TeacherHome(): JSX.Element {
   const [treeExpandedKeys, setTreeExpandedKeys] = useState<Key[]>([]);
 
   function onTreeChange(checkedValues: string[]) {
-    console.log('checked values: ', checkedValues);
-    console.log('expand keys', treeExpandedKeys)
     const expand = checkedValues.filter((value) => {
       return treeData.find(item => item.key === value)?.pId === 0
     })
@@ -115,7 +129,7 @@ export function TeacherHome(): JSX.Element {
     setTreeExpandedKeys(treeExpandedKeys.length === 0 ? expand : treeExpandedKeys.concat(expand));
   }
 
-  function onTreeExpand(expand: Key[]){
+  function onTreeExpand(expand: Key[]) {
     setTreeExpandedKeys(treeExpandedKeys.length === 0 ? expand : treeExpandedKeys.concat(expand));
   }
 
@@ -207,11 +221,10 @@ export function TeacherHome(): JSX.Element {
           form
             .validateFields()
             .then(values => {
-              // form.resetFields();
+              form.resetFields();
               assignClickHandler(values);
             })
-            .catch(info => {
-              console.log('Validate Failed:', info);
+            .catch(() => {
             });
         }}
       >
