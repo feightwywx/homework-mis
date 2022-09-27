@@ -1,34 +1,52 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# homework-mis
 
-## Getting Started
+一个基于[Next.js](https://nextjs.org)的作业管理信息系统。
 
-First, run the development server:
+[Demo链接](https://homework-mis.drwf.ink)
+[备用链接（Vercel）](https://homework-mis-tog4.vercel.app)
 
-```bash
-npm run dev
-# or
-yarn dev
+## Get Started
+
+#### 1. 安装依赖
+```commandline
+npm i
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### 2. 数据库准备
+本项目使用一个名为`homework_mis`的MySQL 8.0数据库。
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+在调试之前，需要手动创建该数据库，并运行`sql/homework_mis.sql`来初始化表结构。
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+#### 3. 环境变量
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+本项目通过环境变量存储参数。你需要在项目根目录下创建一个`.env.local`文件，启动服务时Next.js会自动从中载入环境变量。`.env.local`的结构如下：
 
-## Learn More
+```ini
+SECRET_COOKIE_PASSWORD=
+MYSQL_HOST=
+MYSQL_USER=
+MYSQL_PORT=  # 默认3306
+MYSQL_PASSWORD=
+```
 
-To learn more about Next.js, take a look at the following resources:
+#### 4. 开始调试
+```commandline
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 通过Docker部署
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+本项目提供了`linux/amd64`和`linux/amd64`的[Docker镜像](https://hub.docker.com/r/dotdirewolf/hwmis-docker)。
 
-## Deploy on Vercel
+以下命令将会拉取镜像，启动一个名为的`hwmis`的容器，并将容器内`3000`端口映射到随机端口。记得替换成你自己的环境变量。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```commandline
+docker pull dotdirewolf/hwmis-docker
+docker run -itdP --name hwmis \
+-e SECRET_COOKIE_PASSWORD= \
+-e MYSQL_HOST= \
+-e MYSQL_USER= \
+-e MYSQL_PORT= \
+-e MYSQL_PASSWORD= \
+dotdirewolf/hwmis-docker
+```
