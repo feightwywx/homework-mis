@@ -3,7 +3,13 @@
 一个基于[Next.js](https://nextjs.org)的作业管理信息系统。
 
 [Demo链接](https://homework-mis.drwf.ink)
+
 [备用链接（Vercel）](https://homework-mis-tog4.vercel.app)
+
+||用户名|密码|
+|--|--|--|
+|学生端|direwolf|123456|
+|教师端|test|123456|
 
 ## Get Started
 
