@@ -1,33 +1,30 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
+import { failResponse, parseIdFromReqest, statusCode, successResponse } from "../../../../../utils/api";
 import { getTeacherHomeworkDetail } from "../../../../../utils/homework";
 import { sessionOptions } from "../../../../../utils/session";
-import { getId } from "../../../../../utils/user";
 
 async function teacherDetailRoute(req: NextApiRequest, res: NextApiResponse) {
   const { hwid } = req.query;
 
   if (!hwid) {
-    res.status(500).end();
+    res.json(failResponse(statusCode.ROUTER_PARAM_REQUIRED, 'hwid required'));
     return;
   }
 
-  let token = undefined;
-  if (req.session.user?.token) {
-    token = req.session.user?.token
-  } else {
-    token = await req.body.token;
-  }
-
-  const id = await getId('teacher', token);
-
+  const id = await parseIdFromReqest(req, 'teacher');
   if (!id) {
-    res.status(401).end();
+    res.json(failResponse(statusCode.TOKEN_INVALID));
     return;
   }
 
   const result = await getTeacherHomeworkDetail(+hwid, id);
-  res.json(result);
+  if (result) {
+    res.json(successResponse(result))
+  } else {
+    res.json(failResponse(statusCode.NUL_QUERY_DATA))
+  }
+  return;
 }
 
 export default withIronSessionApiRoute(teacherDetailRoute, sessionOptions)

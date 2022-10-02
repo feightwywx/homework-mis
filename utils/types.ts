@@ -1,3 +1,5 @@
+import { classRow, studentRow } from "./user";
+
 export type User = {
   isLoggedIn: boolean;
   name: string;
@@ -40,7 +42,7 @@ export interface HomeworkDetailContent {
 }
 
 export interface HomeworkStudentDetail {
-  detail : HomeworkDetail;
+  detail: HomeworkDetail;
   content: HomeworkDetailContent;
 }
 
@@ -52,4 +54,20 @@ export interface HomeworkTeacherDetailContent extends HomeworkDetailContent {
 export interface HomeworkTeacherDetail {
   detail: HomeworkDetail;
   content: Array<HomeworkTeacherDetailContent>;
+}
+
+export type ResponseResult = string
+  | Homework[]
+  | UpdateResult
+  | studentRow[]
+  | classRow[]
+  | User
+
+export interface JsonResponse<T = ResponseResult> {
+  code: number;
+  result: T;
+}
+
+export interface UpdateResult {
+  affected: number
 }

@@ -1,23 +1,23 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
+import { failResponse, parseIdFromReqest, statusCode, successResponse } from "../../../../utils/api";
 import { getTeacherHomeworks } from "../../../../utils/homework";
 import { sessionOptions } from "../../../../utils/session";
-import { getId } from "../../../../utils/user";
 
 async function teacherMyRoute(req: NextApiRequest, res: NextApiResponse) {
-  let token = undefined;
-  if (req.session.user?.token) {
-    token = req.session.user?.token
-  } else {
-    token = await req.body.token;
+  const id = await parseIdFromReqest(req, 'teacher');
+  if (!id) {
+    res.json(failResponse(statusCode.TOKEN_INVALID));
+    return;
   }
-  const id = await getId('teacher', token);
-
-  if (id) {
-    res.json(await getTeacherHomeworks(id))
+  
+  const result = await getTeacherHomeworks(id)
+  if (result) {
+    res.json(successResponse(result))
   } else {
-    res.json({ success: -1 });
+    res.json(failResponse(statusCode.NUL_QUERY_DATA))
   }
+  return;
 
 }
 

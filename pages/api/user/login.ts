@@ -4,6 +4,7 @@ import { withIronSessionApiRoute } from 'iron-session/next'
 import { sessionOptions } from '../../../utils/session'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getToken } from '../../../utils/token';
+import { failResponse, statusCode, successResponse } from "../../../utils/api";
 
 async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
 
@@ -11,7 +12,8 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   try {
     const token = await getToken(username, password, usertype);
     if (token === null) {
-      res.status(401).json({ message: '用户名或密码错误' });
+      res.json(successResponse(statusCode.TOKEN_INVALID));
+      return;
     } else {
       const user = {
         isLoggedIn: true,
@@ -22,10 +24,12 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
       req.session.user = user;
       await req.session.save();
 
-      res.json(user);
+      res.json(successResponse(user));
+      return;
     }
   } catch (e) {
-    res.status(500).json({ message: (e as Error).message })
+    res.json(failResponse(-1, (e as Error).message));
+    return;
   }
 
 }

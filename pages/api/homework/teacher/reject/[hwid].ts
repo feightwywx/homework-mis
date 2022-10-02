@@ -1,35 +1,41 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
+import { failResponse, parseIdFromReqest, statusCode, successResponse } from "../../../../../utils/api";
 import { setReject } from "../../../../../utils/homework";
 import { sessionOptions } from "../../../../../utils/session";
-import { getId, getStudentId } from "../../../../../utils/user";
+import { getStudentId } from "../../../../../utils/user";
 
 async function teacherRejectRoute(req: NextApiRequest, res: NextApiResponse) {
   const { hwid } = req.query;
   const { studentName } = await req.body;
   const stuid = await getStudentId(studentName);
 
-  if (!hwid || !stuid) {
-    res.status(500).end();
+  if (!hwid) {
+    res.json(failResponse(statusCode.ROUTER_PARAM_REQUIRED, 'hwid required'));
+    return;
+  }
+  if (!studentName) {
+    res.json(failResponse(statusCode.BODY_PARAM_REQUIRED, 'studentName required'));
+    return;
+  }
+  if (!stuid) {
+    res.json(failResponse(statusCode.NUL_QUERY_PARAM, 'stuid query error'));
     return;
   }
 
-  let token = undefined;
-  if (req.session.user?.token) {
-    token = req.session.user?.token
-  } else {
-    token = await req.body.token;
-  }
-
-  const id = await getId('teacher', token);
-
+  const id = await parseIdFromReqest(req, 'teacher');
   if (!id) {
-    res.status(401).end();
+    res.json(failResponse(statusCode.TOKEN_INVALID));
     return;
   }
 
   const result = await setReject(+hwid, stuid);
-  res.json({success: result});
+  if (result) {
+    res.json(successResponse({ affected: result }))
+  } else {
+    res.json(failResponse(statusCode.NUL_QUERY_DATA))
+  }
+  return;
 }
 
 export default withIronSessionApiRoute(teacherRejectRoute, sessionOptions)
