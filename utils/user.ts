@@ -8,11 +8,11 @@ type idRow = {
   id: number
 }
 
-type classRow = {
+export type classRow = {
   class: string
 }
 
-type studentRow = {
+export type studentRow = {
   id: number,
   name: string
 }

@@ -1,34 +1,39 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
+import { failResponse, parseIdFromReqest, statusCode, successResponse } from "../../../../../utils/api";
 import { updateJudge } from "../../../../../utils/homework";
 import { sessionOptions } from "../../../../../utils/session";
-import { getId } from "../../../../../utils/user";
 
 async function teacherJudgeRoute(req: NextApiRequest, res: NextApiResponse) {
   const { cid } = req.query;
   const { score, comment } = await req.body;
 
   if (!cid) {
-    res.status(500).end();
+    res.json(failResponse(statusCode.ROUTER_PARAM_REQUIRED, 'cid required'));
+    return;
+  }
+  if (!score) {
+    res.json(failResponse(statusCode.BODY_PARAM_REQUIRED, 'score required'));
+    return;
+  }
+  if (!comment) {
+    res.json(failResponse(statusCode.BODY_PARAM_REQUIRED, 'comment required'));
     return;
   }
 
-  let token = undefined;
-  if (req.session.user?.token) {
-    token = req.session.user?.token
-  } else {
-    token = await req.body.token;
-  }
-
-  const id = await getId('teacher', token);
-
+  const id = await parseIdFromReqest(req, 'teacher');
   if (!id) {
-    res.status(401).end();
+    res.json(failResponse(statusCode.TOKEN_INVALID));
     return;
   }
 
   const result = await updateJudge(+cid, +score, comment);
-  res.json({success: result});
+  if (result) {
+    res.json(successResponse(result))
+  } else {
+    res.json(failResponse(statusCode.NUL_QUERY_DATA))
+  }
+  return;
 }
 
 export default withIronSessionApiRoute(teacherJudgeRoute, sessionOptions)
