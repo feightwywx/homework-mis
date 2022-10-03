@@ -12,6 +12,7 @@ import useSWR from 'swr';
 import { DefaultOptionType } from 'antd/lib/select';
 import { Key } from 'antd/lib/table/interface';
 import { useRouter } from 'next/router';
+import { JsonResponse } from '../utils/types';
 
 const { Text, Title } = Typography
 
@@ -40,7 +41,7 @@ export function TeacherHome(): JSX.Element {
   const { data: classNames } = useSWR<Array<{ class: string }>>(treeData.length === 0 ? '/api/user/class' : null);
 
   useEffect(() => {
-    if (classNames) {
+    if (Array.isArray(classNames)) {
       setTreeData(classNames.map((item, index) => ({
         id: ++index,
         pId: 0,
@@ -69,10 +70,14 @@ export function TeacherHome(): JSX.Element {
     }).then(res =>
       res.json()
     ).then(json => {
-      const childNodes = (json as { id: number, name: string }[]).map((item) => (
-        genNode(id, item)
-      ))
-      setTreeData(treeData.concat(childNodes));
+      const childArray = (json as JsonResponse<{ id: number, name: string }[]>).result
+      if (Array.isArray(childArray)) {
+        const childNodes = childArray.map((item) => (
+          genNode(id, item)
+        ))
+        setTreeData(treeData.concat(childNodes));
+      }
+
     })
   )
 
@@ -94,12 +99,12 @@ export function TeacherHome(): JSX.Element {
           const studentNodes = treeData.filter(node => node.pId === pid);
           const studentIdsOfClass = studentNodes.map(item => item.value);
           studentList = studentList.concat(studentIdsOfClass);
-        } 
+        }
       } else {
         studentList.push(item);
       }
     })
-  
+
     fetch(`/api/homework/teacher/assign`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -135,7 +140,7 @@ export function TeacherHome(): JSX.Element {
 
   return (
     <HwLayout>
-      <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+      {homework && <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
         <Title style={{ marginBottom: '16px' }}>{
           hour < 5 ? '夜深了' : (
             hour > 5 && hour < 9 ? '早上好' : (
@@ -210,6 +215,7 @@ export function TeacherHome(): JSX.Element {
           })()}
         </Row>
       </Space>
+      }
       <Modal
         open={modalOpen}
         title='作业布置'

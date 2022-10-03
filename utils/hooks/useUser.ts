@@ -1,11 +1,12 @@
 import { useEffect } from 'react'
 import Router from 'next/router'
 import useSWR from 'swr'
-import { User } from "../types"
+import { JsonResponse, User } from "../types"
 
 export default function useUser() {
-  const { data: user, mutate: mutateUser } = useSWR<User>('/api/user/info')
+  const { data: userJson, mutate: mutateUser } = useSWR<JsonResponse<User>>('/api/user/info')
 
+  const user = userJson?.result;
   useEffect(() => {
     if (!user) return        //  未加载，什么也不做
 

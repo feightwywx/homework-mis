@@ -5,7 +5,7 @@ import { Typography, Space, Button, Divider, Tag, Modal, Input, Table, Form, Inp
 import { ArrowLeftOutlined, FormOutlined } from '@ant-design/icons';
 import { useMediaPredicate } from "react-media-hook";
 import useUser from '../../utils/hooks/useUser';
-import { HomeworkDetail, HomeworkDetailContent, HomeworkStudentDetail, HomeworkTeacherDetail, HomeworkTeacherDetailContent } from '../../utils/types';
+import { HomeworkDetail, HomeworkDetailContent, HomeworkStudentDetail, HomeworkTeacherDetail, HomeworkTeacherDetailContent, JsonResponse } from '../../utils/types';
 import React, { useState } from 'react';
 import useSWR from 'swr';
 import parseMysqlDateTime from '../../utils/parseTime';
@@ -22,18 +22,18 @@ function HomeworkDetailPage() {
 
   const { data } = useSWR(`/api/homework/${user?.userType}/detail/${hwid}`);
 
-  const detail = (data as HomeworkStudentDetail)?.detail;
-  const content = (data as HomeworkStudentDetail)?.content;
+  const detail = (data as JsonResponse<HomeworkStudentDetail>)?.result?.detail;
+  const content = (data  as JsonResponse<HomeworkStudentDetail>)?.result?.content;
   const dead = detail ? new Date(Date.now()) > parseMysqlDateTime(detail.deadline) : false;
 
   return (
     <HwLayout>
-      {data && hwid &&
+      {data && hwid && detail && content &&
         <>
           <CommonDetail content={detail} />
           {user?.userType === 'student'
             ? <StudentDetail content={content} dead={dead} hwid={+hwid} />
-            : <TeacherDetail content={(data as HomeworkTeacherDetail).content} hwid={+hwid} />
+            : <TeacherDetail content={(data as JsonResponse<HomeworkTeacherDetail>).result.content} hwid={+hwid} />
           }
 
         </>
