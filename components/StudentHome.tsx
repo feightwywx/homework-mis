@@ -17,7 +17,7 @@ export function StudentHome(): JSX.Element {
 
   return (
     <HwLayout>
-      <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+      {homework && <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
         <Title style={{ marginBottom: '16px' }}>{
           hour < 5 ? '夜深了' : (
             hour < 9 ? '早上好' : (
@@ -84,5 +84,6 @@ export function StudentHome(): JSX.Element {
           })()}
         </Row>
       </Space>
+      }
     </HwLayout>);
 }
