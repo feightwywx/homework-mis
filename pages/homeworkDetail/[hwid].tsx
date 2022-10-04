@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import HwLayout from '../../components/layout';
-import { Typography, Space, Button, Divider, Tag, Modal, Input, Table, Form, InputNumber } from 'antd';
+import { Typography, Space, Button, Divider, Tag, Modal, Input, Table, Form, InputNumber, message } from 'antd';
 import { ArrowLeftOutlined, FormOutlined } from '@ant-design/icons';
 import { useMediaPredicate } from "react-media-hook";
 import useUser from '../../utils/hooks/useUser';
@@ -23,7 +23,7 @@ function HomeworkDetailPage() {
   const { data } = useSWR(`/api/homework/${user?.userType}/detail/${hwid}`);
 
   const detail = (data as JsonResponse<HomeworkStudentDetail>)?.result?.detail;
-  const content = (data  as JsonResponse<HomeworkStudentDetail>)?.result?.content;
+  const content = (data as JsonResponse<HomeworkStudentDetail>)?.result?.content;
   const dead = detail ? new Date(Date.now()) > parseMysqlDateTime(detail.deadline) : false;
 
   return (
@@ -83,7 +83,7 @@ export function StudentDetail({
   const [accContent, setAccContent] = useState('');
   const [confirmLoading, setConfirmLoading] = useState(false);
 
-  const router = useRouter()
+  const { mutate } = useSWR(`/api/homework/student/detail/${hwid}`);
 
   function accFieldHandler(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setAccContent(e.target.value);
@@ -95,12 +95,20 @@ export function StudentDetail({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: accContent })
-    }).then(() => {
+    }).then(res => {
       setConfirmLoading(false);
-      setModalOpen(false);
-      router.reload();
+      return res.json() as Promise<JsonResponse>
+    }).then(json => {
+      if (json.code === 0) {
+        mutate();
+        setModalOpen(false);
+        message.success('已提交');
+      } else {
+        message.error(`未知错误：${json.code}`);
+      }
     }).catch(err => {
-      console.error(err)
+      message.error(err);
+      console.error(err);
     })
   }
 
@@ -207,8 +215,6 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
     '已评分': 'lime'
   } as { [x: string]: string }
 
-  const router = useRouter();
-
   const [judgeModalOpen, setJudgeModalOpen] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [currentDetail, setCurrentDetail] = useState({} as HomeworkTeacherDetailContent)
@@ -216,6 +222,8 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
   const [currentContentId, setCurrentContentId] = useState(0);
 
   const [form] = Form.useForm();
+
+  const { mutate } = useSWR(`/api/homework/teacher/detail/${hwid}`);
 
   const judgeClickHandler = (values: {
     score: number, comment?: string
@@ -226,13 +234,22 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ score: values.score, comment: values.comment })
-    }).then(() => {
-      router.reload();
+    }).then(res => {
       setConfirmJudgeLoading(false);
-      setJudgeModalOpen(false);
-      setDetailModalOpen(false);
+      return res.json() as Promise<JsonResponse<number>>
+    }).then(json => {
+      if (json.code === 0) {
+        message.success('已提交');
+        mutate();
+        form.resetFields();
+        setJudgeModalOpen(false);
+        setDetailModalOpen(false);
+      } else {
+        message.error(`未知错误：${json.code}`);
+      }
     }).catch(err => {
-      console.error(err)
+      message.error(err);
+      console.error(err);
     })
   };
 
@@ -243,9 +260,15 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
       body: JSON.stringify({
         studentName
       })
-    }).then(() => {
-      router.reload();
+    }).then(res => {
+      return res.json() as Promise<JsonResponse<number>>
+    }).then(json => {
+      if (json.code === 0) {
+        message.success('已打回');
+        mutate();
+      }
     }).catch(err => {
+      message.error(err);
       console.error(err);
     })
   }
@@ -361,7 +384,6 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
         form
           .validateFields()
           .then(values => {
-            form.resetFields();
             judgeClickHandler(values);
           })
           .catch(() => {
