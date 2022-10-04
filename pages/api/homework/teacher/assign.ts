@@ -15,7 +15,7 @@ async function teacherAssignRoute(req: NextApiRequest, res: NextApiResponse) {
     res.json(failResponse(statusCode.BODY_PARAM_REQUIRED, 'deadline required'));
     return;
   }
-  if (!target) {
+  if (!target || !Array.isArray(target)) {
     res.json(failResponse(statusCode.BODY_PARAM_REQUIRED, 'target required'));
     return;
   }
@@ -32,9 +32,11 @@ async function teacherAssignRoute(req: NextApiRequest, res: NextApiResponse) {
     return;
   } else {
     let result = 0;
-    (target as number[]).forEach(async value => {
-      result += await insertTarget(hwid, value)
-    })
+    await Promise.all(
+      target.map(async value => {
+        result += await insertTarget(hwid, value)
+      })
+    );
 
     if (result) {
       res.json(successResponse({ affected: result }));

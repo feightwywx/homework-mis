@@ -1,4 +1,4 @@
-import { Button, Col, DatePicker, Divider, Form, Input, Modal, Row, Space, Typography, TreeSelect, TreeSelectProps } from 'antd';
+import { Button, Col, DatePicker, Divider, Form, Input, Modal, Row, Space, Typography, TreeSelect, TreeSelectProps, message } from 'antd';
 import { FormOutlined } from '@ant-design/icons';
 import HwLayout from './layout';
 import useUser from '../utils/hooks/useUser';
@@ -11,8 +11,8 @@ import { RangePickerProps } from 'antd/lib/date-picker';
 import useSWR from 'swr';
 import { DefaultOptionType } from 'antd/lib/select';
 import { Key } from 'antd/lib/table/interface';
-import { useRouter } from 'next/router';
 import { JsonResponse } from '../utils/types';
+import { classRow } from '../utils/user';
 
 const { Text, Title } = Typography
 
@@ -21,9 +21,7 @@ const { TextArea } = Input
 export function TeacherHome(): JSX.Element {
   const { user } = useUser();
 
-  const router = useRouter()
-
-  const { homework } = useTeacherHomework();
+  const { homework, mutateHomework } = useTeacherHomework();
 
   const currtime = new Date(Date.now())
   const hour = currtime.getHours();
@@ -38,7 +36,8 @@ export function TeacherHome(): JSX.Element {
 
   // 获取班级
   const [treeData, setTreeData] = useState<Omit<DefaultOptionType, 'label'>[]>([]);
-  const { data: classNames } = useSWR<Array<{ class: string }>>(treeData.length === 0 ? '/api/user/class' : null);
+  const { data: classNamesJson } = useSWR<JsonResponse<classRow[]>>(treeData.length === 0 ? '/api/user/class' : null);
+  const classNames = classNamesJson?.result
 
   useEffect(() => {
     if (Array.isArray(classNames)) {
@@ -114,11 +113,21 @@ export function TeacherHome(): JSX.Element {
         deadline: deadline,
         target: studentList
       })
-    }).then(() => {
+    }).then(res => {
       setConfirmLoading(false);
-      setModalOpen(false);
-      router.reload();
+      return res.json() as Promise<JsonResponse>
+    }).then(json => {
+      if (json.code === 0) {
+        message.success('作业已下发');
+        form.resetFields();
+        setModalOpen(false);
+        mutateHomework();
+      } else {
+        message.error(`未知错误：${json.code}`);
+      }
+
     }).catch(err => {
+      message.error(err);
       console.error(err)
     })
   }
@@ -227,7 +236,6 @@ export function TeacherHome(): JSX.Element {
           form
             .validateFields()
             .then(values => {
-              form.resetFields();
               assignClickHandler(values);
             })
             .catch(() => {
