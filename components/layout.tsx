@@ -1,4 +1,4 @@
-import { Avatar, Dropdown, Layout, Menu, Space } from 'antd';
+import { Avatar, Dropdown, Layout, Menu, Space, Spin } from 'antd';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
 import { useMediaPredicate } from "react-media-hook";
 
@@ -7,20 +7,27 @@ import styles from '../styles/Layout.module.css';
 import useUser from '../utils/hooks/useUser';
 import fetchJson from '../utils/fetchJson';
 import Link from 'next/link';
+import Router from 'next/router';
 
 const { Header, Content, Footer } = Layout
 
 export default function HwLayout({ children }: { children: React.ReactNode }): JSX.Element {
   const { user, mutateUser } = useUser()
+  const [spinning, setSpinning] = React.useState(false);
 
   async function onLogoutClick(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
+    setSpinning(true);
     mutateUser(
       await fetchJson('/api/user/logout', { method: 'POST' })
     )
   }
 
   const matches = useMediaPredicate("(min-width: 768px)")
+
+  Router.events.on('routeChangeStart', () => { setSpinning(true); });
+  Router.events.on('routeChangeComplete', () => { setSpinning(false); });
+  Router.events.on('routeChangeError', () => { setSpinning(false); });
 
   return (
     <Layout>
@@ -76,9 +83,11 @@ export default function HwLayout({ children }: { children: React.ReactNode }): J
 
       </Header>
       <Content className={styles.layout_content} >
-        <div className={styles['site-layout-content']}>
-          {children}
-        </div>
+        <Spin spinning={user === undefined || spinning} delay={500}>
+          <div className={styles['site-layout-content']}>
+            {children}
+          </div>
+        </Spin>
       </Content>
       <Footer style={{ textAlign: 'center' }}>
         ©️2022 .direwolf
