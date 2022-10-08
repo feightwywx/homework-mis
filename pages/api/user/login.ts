@@ -12,7 +12,7 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
   try {
     const token = await getToken(username, password, usertype);
     if (token === null) {
-      res.json(successResponse(statusCode.TOKEN_INVALID));
+      res.json(failResponse(statusCode.TOKEN_INVALID));
       return;
     } else {
       const user = {
