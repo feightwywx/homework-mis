@@ -26,7 +26,11 @@ function Login() {
         message.error(`未知错误：${json.code}`);
       }
     }).catch(e => {
-      message.error(e.toString());
+      if ((e as Error).message === 'Failed to fetch') {
+        message.error('网络错误');
+      } else {
+        message.error('遇到了未知错误')
+      }
       console.error(e);
     })
   }

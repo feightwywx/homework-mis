@@ -106,9 +106,15 @@ export function StudentDetail({
       } else {
         message.error(`未知错误：${json.code}`);
       }
-    }).catch(err => {
-      message.error(err);
-      console.error(err);
+    }).catch(e => {
+      if ((e as Error).message === 'Failed to fetch') {
+        message.error('网络错误');
+      } else {
+        message.error('遇到了未知错误')
+      }
+      console.error(e);
+    }).finally(() => {
+      setConfirmLoading(false);
     })
   }
 
@@ -247,9 +253,15 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
       } else {
         message.error(`未知错误：${json.code}`);
       }
-    }).catch(err => {
-      message.error(err);
-      console.error(err);
+    }).catch(e => {
+      if ((e as Error).message === 'Failed to fetch') {
+        message.error('网络错误');
+      } else {
+        message.error('遇到了未知错误')
+      }
+      console.error(e);
+    }).finally(() => {
+      setConfirmJudgeLoading(false);
     })
   };
 
@@ -267,9 +279,13 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
         message.success('已打回');
         mutate();
       }
-    }).catch(err => {
-      message.error(err);
-      console.error(err);
+    }).catch(e => {
+      if ((e as Error).message === 'Failed to fetch') {
+        message.error('网络错误');
+      } else {
+        message.error('遇到了未知错误')
+      }
+      console.error(e);
     })
   }
 

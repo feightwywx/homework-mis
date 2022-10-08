@@ -76,7 +76,13 @@ export function TeacherHome(): JSX.Element {
         ))
         setTreeData(treeData.concat(childNodes));
       }
-
+    }).catch(e => {
+      if ((e as Error).message === 'Failed to fetch') {
+        message.error('网络错误');
+      } else {
+        message.error('遇到了未知错误')
+      }
+      console.error(e);
     })
   )
 
@@ -125,10 +131,15 @@ export function TeacherHome(): JSX.Element {
       } else {
         message.error(`未知错误：${json.code}`);
       }
-
-    }).catch(err => {
-      message.error(err);
-      console.error(err)
+    }).catch(e => {
+      if ((e as Error).message === 'Failed to fetch') {
+        message.error('网络错误');
+      } else {
+        message.error('遇到了未知错误')
+      }
+      console.error(e);
+    }).finally(() => {
+      setConfirmLoading(false);
     })
   }
 
