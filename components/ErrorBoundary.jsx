@@ -1,4 +1,5 @@
 import React from "react";
+import Empty from "./Empty";
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -18,6 +19,6 @@ export class ErrorBoundary extends React.Component {
   }
 
   render() {
-    return this.props.children; 
+    return !this.props.error ? this.props.children : <Empty/>; 
   }
 }

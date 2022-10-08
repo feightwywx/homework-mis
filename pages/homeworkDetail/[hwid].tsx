@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import HwLayout from '../../components/layout';
-import { Typography, Space, Button, Divider, Tag, Modal, Input, Table, Form, InputNumber, message } from 'antd';
+import { Typography, Space, Button, Divider, Tag, Modal, Input, Table, Form, InputNumber, message, Spin } from 'antd';
 import { ArrowLeftOutlined, FormOutlined } from '@ant-design/icons';
 import { useMediaPredicate } from "react-media-hook";
 import useUser from '../../utils/hooks/useUser';
@@ -28,7 +28,7 @@ function HomeworkDetailPage() {
 
   return (
     <HwLayout>
-      {data && hwid && detail && content &&
+      {(data && hwid && detail && content) ?
         <>
           <CommonDetail content={detail} />
           {user?.userType === 'student'
@@ -37,6 +37,10 @@ function HomeworkDetailPage() {
           }
 
         </>
+        : <div style={{ margin: '32px', textAlign: 'center' }}>
+          <Spin spinning={!(data && hwid && detail && content)}>
+          </Spin>
+        </div>
       }
     </HwLayout>
   )
