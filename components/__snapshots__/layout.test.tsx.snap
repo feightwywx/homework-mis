@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Layout renders HwLayout 1`] = `
+<div>
+  <section
+    class="ant-layout"
+  >
+    <header
+      class="ant-layout-header"
+    >
+      <div
+        class="logo"
+      >
+        学生作业管理系统
+      </div>
+    </header>
+    <main
+      class="ant-layout-content layout_content"
+    >
+      <div
+        class="ant-spin-nested-loading"
+      >
+        <div
+          class="ant-spin-container"
+        >
+          <div
+            class="site-layout-content"
+          >
+            <div>
+              test
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer
+      class="ant-layout-footer"
+      style="text-align: center;"
+    >
+      ©️2022 .direwolf
+    </footer>
+  </section>
+</div>
+`;
