@@ -1,4 +1,4 @@
-import './matchMedia.mock'
+import '../test/utils/matchMedia.mock'
 import { render } from '@testing-library/react'
 import { Homework } from '../utils/types'
 import { HomeworkCard } from './HomeworkCard'
@@ -9,7 +9,7 @@ describe('HomeworkCard', () => {
       title: 'Homework Title',
       assignment: 'Homework Assignment',
       time: '2022-09-27T02:50:02.000Z',
-      deadline: '2022-09-27T02:50:02.000Z',
+      deadline: '2222-09-27T02:50:02.000Z',
       teacher: 'Teacher Name',
     } as Homework
 

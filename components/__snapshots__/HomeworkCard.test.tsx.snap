@@ -16,12 +16,6 @@ exports[`HomeworkCard renders HomeworkCard 1`] = `
           class="ant-card-head-title"
         >
           Homework Title
-          <span
-            class="ant-tag"
-            style="margin-left: 8px; vertical-align: middle;"
-          >
-            已过期
-          </span>
         </div>
         <div
           class="ant-card-extra"
@@ -48,7 +42,7 @@ exports[`HomeworkCard renders HomeworkCard 1`] = `
         class="ant-typography"
       >
         截止时间：
-        9/27/2022, 10:50:02 AM
+        9/27/2222, 10:50:02 AM
       </span>
       <div
         class="ant-divider ant-divider-horizontal"
@@ -167,7 +161,7 @@ exports[`HomeworkCard renders completed HomeworkCard 1`] = `
         class="ant-typography"
       >
         截止时间：
-        9/27/2022, 10:50:02 AM
+        9/27/2222, 10:50:02 AM
       </span>
       <div
         class="ant-divider ant-divider-horizontal"
