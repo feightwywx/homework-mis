@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`/api/homework/student/detail endpoint returns homework detail 1`] = `
+{
+  "code": 0,
+  "result": {
+    "content": {
+      "completed": false,
+    },
+    "detail": {
+      "assignment": "这是一个测试用的作业。用于测试未完成作业。",
+      "deadline": "2023-10-30T03:45:14.000Z",
+      "time": "2022-09-27T02:50:02.000Z",
+      "title": "作业1",
+    },
+  },
+}
+`;

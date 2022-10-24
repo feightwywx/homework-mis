@@ -18,7 +18,7 @@ export function failResponse(code: number, result?: ResponseResult) {
 
 export async function parseIdFromReqest(req: NextApiRequest, userType: UserType) {
   let token = undefined;
-  if (req.session.user?.token) {
+  if (req.session?.user?.token) {
     token = req.session.user?.token
   } else {
     token = await req.body.token;

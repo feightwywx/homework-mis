@@ -4,7 +4,7 @@ import { getStudentHomeworkDetail } from "../../../../../utils/homework";
 import { failResponse, parseIdFromReqest, statusCode, successResponse } from "../../../../../utils/api";
 import { sessionOptions } from "../../../../../utils/session";
 
-async function studentDetailRoute(req: NextApiRequest, res: NextApiResponse) {
+export async function studentDetailRoute(req: NextApiRequest, res: NextApiResponse) {
   const { hwid } = req.query;
 
   if (!hwid) {
