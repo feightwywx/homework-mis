@@ -2,12 +2,16 @@ import { createMocks } from 'node-mocks-http';
 import type { NextApiRequest, NextApiResponse as OrigNextApiResp } from 'next';
 import { studentDetailRoute } from './[hwid]';
 import type { JsonResponse } from '../../../../../utils/types';
+import { initTestDatabase } from '../../../../../test/utils/initTestDatabase';
 
 interface NextApiResponse<T = any> extends OrigNextApiResp<T> {
   _getJSONData: () => T;
 }
 
 describe('/api/homework/student/detail endpoint', () => {
+  beforeAll(async () => {
+    return initTestDatabase()
+  })
 
   const token = '74985a778511a53ba671334bbde2125f0033a8f16907c2d8965cac571645a96ad60333d179021e65fc65ac20cf42e009';
 

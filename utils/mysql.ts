@@ -9,6 +9,7 @@ export async function createMisConnection() {
     password: process.env.MYSQL_PASSWORD,
     port: port,
     database: 'homework_mis',
+    multipleStatements: true,
   })
 }
 
