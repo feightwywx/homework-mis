@@ -4,7 +4,7 @@ import { failResponse, parseIdFromReqest, statusCode, successResponse } from "..
 import { getTeacherHomeworks } from "../../../../utils/homework";
 import { sessionOptions } from "../../../../utils/session";
 
-async function teacherMyRoute(req: NextApiRequest, res: NextApiResponse) {
+export async function teacherMyRoute(req: NextApiRequest, res: NextApiResponse) {
   const id = await parseIdFromReqest(req, 'teacher');
   if (!id) {
     res.json(failResponse(statusCode.TOKEN_INVALID));

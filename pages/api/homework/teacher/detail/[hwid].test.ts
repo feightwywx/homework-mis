@@ -1,0 +1,66 @@
+import { createMocks } from 'node-mocks-http';
+import type { NextApiRequest, NextApiResponse as OrigNextApiResp } from 'next';
+import { teacherDetailRoute } from './[hwid]';
+import type { JsonResponse } from '../../../../../utils/types';
+import { initTestDatabase } from '../../../../../test/utils/initTestDatabase';
+import { statusCode } from '../../../../../utils/api';
+
+interface NextApiResponse<T = any> extends OrigNextApiResp<T> {
+  _getJSONData: () => T;
+}
+
+describe('/api/homework/teacher/detail endpoint', () => {
+  beforeAll(async () => {
+    return initTestDatabase()
+  })
+
+  const token = '128f3a6727ead7a49aaf2caf4a7f66d29f4cf614ea36c2ce09ade39dfbd3e666af14eb906caf9f5aeddf04bdd52947e0';
+
+  function mockRequestResponse(token?: string, hwid?: number) {
+    // @ts-expect-error
+    const { req, res }: { req: NextApiRequest, res: NextApiResponse<JsonResponse> } = createMocks({
+      method: 'GET',
+      body: {
+        token: token
+      },
+    })
+
+    req.query = {
+      hwid: hwid ? hwid.toString() : undefined
+    }
+
+    return { req, res }
+  }
+
+  it('returns ROUTER_PARAM_REQUIRED if !hwid', async () => {
+    const { req, res } = mockRequestResponse(token, undefined);
+    await teacherDetailRoute(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(res._getJSONData().code).toEqual(statusCode.ROUTER_PARAM_REQUIRED);
+  })
+
+  it('returns TOKEN_INVALID if !token', async () => {
+    const { req, res } = mockRequestResponse(undefined, 1);
+    await teacherDetailRoute(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(res._getJSONData().code).toEqual(statusCode.TOKEN_INVALID);
+  })
+
+  it('returns NUL_QUERY_DATA if !token', async () => {
+    const { req, res } = mockRequestResponse(token, -1);
+    await teacherDetailRoute(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(res._getJSONData().code).toEqual(statusCode.NUL_QUERY_DATA);
+  })
+
+  it('if ok', async () => {
+    const { req, res } = mockRequestResponse(token, 1);
+    await teacherDetailRoute(req, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(res._getJSONData()).toMatchSnapshot();
+  })
+})

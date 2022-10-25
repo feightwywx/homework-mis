@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`/api/homework/student/my endpoint if ok 1`] = `
+{
+  "code": 0,
+  "result": [
+    {
+      "assignment": "这是一个测试用的作业。用于测试未完成作业。",
+      "completed": false,
+      "deadline": "2023-10-30T03:45:14.000Z",
+      "id": 1,
+      "name": "测试教师",
+      "teacher": "测试教师",
+      "time": "2022-09-27T02:50:02.000Z",
+      "title": "作业1",
+    },
+    {
+      "assignment": "这是一个过期作业。",
+      "completed": false,
+      "deadline": "2022-09-26T14:46:12.000Z",
+      "id": 2,
+      "name": "测试教师",
+      "teacher": "测试教师",
+      "time": "2022-09-25T07:29:03.000Z",
+      "title": "过期作业1",
+    },
+    {
+      "assignment": "这是一个已完成作业，并且应该已经评分了。",
+      "completed": true,
+      "deadline": "2023-10-30T01:47:52.000Z",
+      "id": 3,
+      "name": "测试教师",
+      "teacher": "测试教师",
+      "time": "2022-09-27T02:50:48.000Z",
+      "title": "已完成作业1",
+    },
+    {
+      "assignment": "这是一个未批阅作业的例子，可以在这里测试作业的批阅和打回功能。",
+      "completed": true,
+      "deadline": "2023-10-31T02:43:19.000Z",
+      "id": 13,
+      "name": "测试教师",
+      "teacher": "测试教师",
+      "time": "2022-09-27T02:50:15.000Z",
+      "title": "未批阅作业",
+    },
+  ],
+}
+`;

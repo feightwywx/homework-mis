@@ -4,7 +4,7 @@ import { failResponse, parseIdFromReqest, statusCode, successResponse } from "..
 import { updateJudge } from "../../../../../utils/homework";
 import { sessionOptions } from "../../../../../utils/session";
 
-async function teacherJudgeRoute(req: NextApiRequest, res: NextApiResponse) {
+export async function teacherJudgeRoute(req: NextApiRequest, res: NextApiResponse) {
   const { cid } = req.query;
   const { score, comment } = await req.body;
 

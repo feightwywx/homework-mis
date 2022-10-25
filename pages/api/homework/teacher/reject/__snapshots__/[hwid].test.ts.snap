@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`/api/homework/teacher/reject endpoint if ok 1`] = `
+{
+  "code": 0,
+  "result": {
+    "affected": 1,
+  },
+}
+`;

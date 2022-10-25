@@ -4,7 +4,7 @@ import { failResponse, parseIdFromReqest, statusCode, successResponse } from "..
 import { updateHomework } from "../../../../../utils/homework";
 import { sessionOptions } from "../../../../../utils/session";
 
-async function studentUpdateRoute(req: NextApiRequest, res: NextApiResponse) {
+export async function studentUpdateRoute(req: NextApiRequest, res: NextApiResponse) {
   const { hwid } = req.query;
   const { content } = await req.body;
 

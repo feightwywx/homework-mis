@@ -36,7 +36,7 @@ describe('/api/homework/student/detail endpoint', () => {
     expect(res._getJSONData().code).toEqual(100);
   })
 
-  it('returns 200 if !hwid', async () => {
+  it('returns 200 if !token', async () => {
     const { req, res } = mockRequestResponse(false, 1);
     await studentDetailRoute(req, res);
 

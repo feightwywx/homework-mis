@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`/api/homework/student/update endpoint if ok 1`] = `
+{
+  "code": 0,
+  "result": 1,
+}
+`;

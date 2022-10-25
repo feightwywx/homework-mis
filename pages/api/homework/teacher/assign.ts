@@ -4,11 +4,15 @@ import { failResponse, parseIdFromReqest, statusCode, successResponse } from "..
 import { insertAssign, insertTarget } from "../../../../utils/homework";
 import { sessionOptions } from "../../../../utils/session";
 
-async function teacherAssignRoute(req: NextApiRequest, res: NextApiResponse) {
+export async function teacherAssignRoute(req: NextApiRequest, res: NextApiResponse) {
   const { title, assignment, deadline, target } = await req.body;
 
   if (!title) {
     res.json(failResponse(statusCode.BODY_PARAM_REQUIRED, 'title required'));
+    return;
+  }
+  if (!assignment) {
+    res.json(failResponse(statusCode.BODY_PARAM_REQUIRED, 'assignment required'));
     return;
   }
   if (!deadline) {

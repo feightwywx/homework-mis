@@ -5,7 +5,7 @@ import { setReject } from "../../../../../utils/homework";
 import { sessionOptions } from "../../../../../utils/session";
 import { getStudentId } from "../../../../../utils/user";
 
-async function teacherRejectRoute(req: NextApiRequest, res: NextApiResponse) {
+export async function teacherRejectRoute(req: NextApiRequest, res: NextApiResponse) {
   const { hwid } = req.query;
   const { studentName } = await req.body;
   const stuid = await getStudentId(studentName);
