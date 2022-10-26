@@ -35,14 +35,14 @@ exports[`HomeworkCard renders HomeworkCard 1`] = `
         class="ant-typography"
       >
         发布时间：
-        9/27/2022, 10:50:02 AM
+        2022/9/27 10:50:02
       </span>
       <br />
       <span
         class="ant-typography"
       >
         截止时间：
-        9/27/2222, 10:50:02 AM
+        2222/9/27 10:50:02
       </span>
       <div
         class="ant-divider ant-divider-horizontal"
@@ -154,14 +154,14 @@ exports[`HomeworkCard renders completed HomeworkCard 1`] = `
         class="ant-typography"
       >
         发布时间：
-        9/27/2022, 10:50:02 AM
+        2022/9/27 10:50:02
       </span>
       <br />
       <span
         class="ant-typography"
       >
         截止时间：
-        9/27/2222, 10:50:02 AM
+        2222/9/27 10:50:02
       </span>
       <div
         class="ant-divider ant-divider-horizontal"
@@ -273,14 +273,14 @@ exports[`HomeworkCard renders completed outdated HomeworkCard 1`] = `
         class="ant-typography"
       >
         发布时间：
-        9/27/2022, 10:50:02 AM
+        2022/9/27 10:50:02
       </span>
       <br />
       <span
         class="ant-typography"
       >
         截止时间：
-        9/27/2022, 10:50:02 AM
+        2022/9/27 10:50:02
       </span>
       <div
         class="ant-divider ant-divider-horizontal"
@@ -368,14 +368,14 @@ exports[`HomeworkCard renders outdated HomeworkCard 1`] = `
         class="ant-typography"
       >
         发布时间：
-        9/27/2022, 10:50:02 AM
+        2022/9/27 10:50:02
       </span>
       <br />
       <span
         class="ant-typography"
       >
         截止时间：
-        9/27/2022, 10:50:02 AM
+        2022/9/27 10:50:02
       </span>
       <div
         class="ant-divider ant-divider-horizontal"

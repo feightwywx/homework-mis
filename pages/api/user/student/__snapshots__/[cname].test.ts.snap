@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`/api/user/student/class endpoint if ok 1`] = `
+{
+  "code": 0,
+  "result": [
+    {
+      "id": 6,
+      "name": "测试同学1",
+    },
+    {
+      "id": 7,
+      "name": "测试同学2",
+    },
+    {
+      "id": 8,
+      "name": "测试同学3",
+    },
+    {
+      "id": 9,
+      "name": "测试同学4",
+    },
+    {
+      "id": 10,
+      "name": "测试同学5",
+    },
+  ],
+}
+`;

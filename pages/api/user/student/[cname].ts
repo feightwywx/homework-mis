@@ -4,7 +4,7 @@ import { failResponse, parseIdFromReqest, statusCode, successResponse } from "..
 import { sessionOptions } from "../../../../utils/session";
 import { getStudentByClass } from "../../../../utils/user";
 
-async function classRoute(req: NextApiRequest, res: NextApiResponse) {
+export async function classRoute(req: NextApiRequest, res: NextApiResponse) {
   const { cname } = req.query;
 
   if (!cname) {
@@ -23,7 +23,7 @@ async function classRoute(req: NextApiRequest, res: NextApiResponse) {
   }
 
   const result = await getStudentByClass(cname);
-  if (result) {
+  if (result && result.length !== 0) {
     res.json(successResponse(result))
   } else {
     res.json(failResponse(statusCode.NUL_QUERY_DATA))

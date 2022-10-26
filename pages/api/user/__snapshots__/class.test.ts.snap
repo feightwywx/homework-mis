@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`/api/user/class endpoint if ok 1`] = `
+{
+  "code": 0,
+  "result": [
+    {
+      "class": "信息管理与信息系统",
+    },
+    {
+      "class": "测试班级",
+    },
+  ],
+}
+`;

@@ -4,7 +4,7 @@ import { failResponse, parseIdFromReqest, statusCode, successResponse } from "..
 import { sessionOptions } from "../../../utils/session";
 import { getAllClasses } from "../../../utils/user";
 
-async function classRoute(req: NextApiRequest, res: NextApiResponse) {
+export async function classRoute(req: NextApiRequest, res: NextApiResponse) {
   const id = await parseIdFromReqest(req, 'teacher');
   if (!id) {
     res.json(failResponse(statusCode.TOKEN_INVALID));
