@@ -71,3 +71,12 @@ export interface JsonResponse<T = ResponseResult> {
 export interface UpdateResult {
   affected: number
 }
+
+export interface Course {
+  id: number;
+  name: string;
+  time: string;
+  ended: boolean;
+  teacherID: number;
+  teacherName: string;
+}

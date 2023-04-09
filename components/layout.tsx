@@ -1,77 +1,106 @@
-import { Avatar, Dropdown, Layout, Menu, Space, Spin } from 'antd';
-import { DownOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Dropdown, Layout, Menu, Space, Spin } from "antd";
+import { DownOutlined, UserOutlined } from "@ant-design/icons";
 import { useMediaPredicate } from "react-media-hook";
 
-import React from 'react';
-import styles from '../styles/Layout.module.css';
-import useUser from '../utils/hooks/useUser';
-import fetchJson from '../utils/fetchJson';
-import Link from 'next/link';
-import Router from 'next/router';
+import React from "react";
+import styles from "../styles/Layout.module.css";
+import useUser from "../utils/hooks/useUser";
+import fetchJson from "../utils/fetchJson";
+import Link from "next/link";
+import Router from "next/router";
 
-const { Header, Content, Footer } = Layout
+const { Header, Content, Footer } = Layout;
 
-export default function HwLayout({ children }: { children: React.ReactNode }): JSX.Element {
-  const { user, mutateUser } = useUser()
+export default function HwLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}): JSX.Element {
+  const { user, mutateUser } = useUser();
   const [spinning, setSpinning] = React.useState(false);
 
   async function onLogoutClick(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
     setSpinning(true);
-    mutateUser(
-      await fetchJson('/api/user/logout', { method: 'POST' })
-    )
+    mutateUser(await fetchJson("/api/user/logout", { method: "POST" }));
   }
 
-  const matches = useMediaPredicate("(min-width: 768px)")
+  const matches = useMediaPredicate("(min-width: 768px)");
 
-  Router.events.on('routeChangeStart', () => { setSpinning(true); });
-  Router.events.on('routeChangeComplete', () => { setSpinning(false); });
-  Router.events.on('routeChangeError', () => { setSpinning(false); });
+  Router.events.on("routeChangeStart", () => {
+    setSpinning(true);
+  });
+  Router.events.on("routeChangeComplete", () => {
+    setSpinning(false);
+  });
+  Router.events.on("routeChangeError", () => {
+    setSpinning(false);
+  });
 
   return (
     <Layout>
       <Header>
-        <div className={styles.logo}>学生作业管理系统</div>
-        {matches &&
+        <div className={styles.logo}>高校教学管理系统</div>
+        {matches && (
           <Menu
             theme="dark"
             mode="horizontal"
-            items={
-              [
-                {
-                  key: 'home',
-                  label: (
-                    <Link href="/">
-                      首页
-                    </Link>
-                  )
-                }
-              ]
-            }
-            style={{ float: 'left' }}>
-          </Menu>
-        }
+            items={[
+              {
+                key: "home",
+                label: <Link href="/">首页</Link>,
+              },
+              {
+                key: "course",
+                label: "课程",
+                children: [
+                  {
+                    key: "course.my",
+                    label: <Link href="/course">我的课程</Link>,
+                  },
+                  {
+                    key: "course.join",
+                    label: <Link href="/course/select">学生选课</Link>,
+                  },
+                ],
+              },
+              {
+                key: "homework",
+                label: "作业",
+              },
+            ]}
+            style={{ float: "left" }}
+          ></Menu>
+        )}
 
-        {user?.isLoggedIn ?
+        {user?.isLoggedIn ? (
           <div className={styles.user}>
             <Avatar icon={<UserOutlined />} />
-            <Dropdown overlay={
-              <Menu items={[
-                {
-                  key: 'logout',
-                  label: <div onClick={onLogoutClick}>注销</div>
-                }
-              ]}
-                style={{ marginTop: 12, padding: 12 }}
-              />
-            }
-
-              trigger={['click']}>
-              <a onClick={e => e.preventDefault()} style={{
-                color: '#fff',
-                marginLeft: 12
-              }}>
+            <Dropdown
+              overlay={
+                <Menu
+                  items={[
+                    {
+                      key: "my",
+                      label: <div onClick={onLogoutClick}>个人资料</div>,
+                    },
+                    {
+                      key: "logout",
+                      label: <div onClick={onLogoutClick}>注销</div>,
+                    },
+                  ]}
+                  style={{ marginTop: 12, padding: 12 }}
+                />
+              }
+              trigger={["click"]}
+            >
+              <a
+                onClick={(e) => e.preventDefault()}
+                style={{
+                  color: "#fff",
+                  marginLeft: 12,
+                }}
+              >
                 <Space>
                   {matches && user.name}
                   <DownOutlined />
@@ -79,19 +108,14 @@ export default function HwLayout({ children }: { children: React.ReactNode }): J
               </a>
             </Dropdown>
           </div>
-          : null}
-
+        ) : null}
       </Header>
-      <Content className={styles.layout_content} >
+      <Content className={styles.layout_content}>
         <Spin spinning={user === undefined || spinning} delay={500}>
-          <div className={styles['site-layout-content']}>
-            {children}
-          </div>
+          <div className={styles["site-layout-content"]}>{children}</div>
         </Spin>
       </Content>
-      <Footer style={{ textAlign: 'center' }}>
-        ©️2022 .direwolf
-      </Footer>
+      <Footer style={{ textAlign: "center" }}>©️2022 .direwolf</Footer>
     </Layout>
-  )
+  );
 }
