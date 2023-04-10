@@ -46,15 +46,19 @@ type TeacherHomeworkDetailRow = {
   comment: string;
 }
 
-export async function getStudentHomeworks(id: number) {
+export async function getStudentHomeworks(id: number, courseID?: number) {
+  console.log(courseID)
   const conn = await createMisConnection();
+  const normalQuery = 'SELECT homework.id, title, assignment, homework.time, deadline, completed, teacher.name ' +
+  'FROM homework_content ' +
+  'LEFT JOIN homework ON homework.id=homework_content.homeworkID ' +
+  'LEFT JOIN teacher ON homework.teacherID=teacher.id ' +
+  'WHERE studentID=?';
+  const withCourseIDQuery = normalQuery + ' AND courseID=?';
+
   const [rows] = await conn.query(
-    'SELECT homework.id, title, assignment, homework.time, deadline, completed, teacher.name ' +
-    'FROM homework_content ' +
-    'LEFT JOIN homework ON homework.id=homework_content.homeworkID ' +
-    'LEFT JOIN teacher ON homework.teacherID=teacher.id ' +
-    'WHERE studentID=?',
-    [id]
+    courseID ? withCourseIDQuery : normalQuery,
+    courseID ? [id, courseID] : [id]
   )
   await conn.end();
   
@@ -69,16 +73,27 @@ export async function getStudentHomeworks(id: number) {
   return homeworks
 }
 
-export async function getTeacherHomeworks(id: number) {
+export async function getTeacherHomeworks(id: number, courseID?: number) {
   const conn = await createMisConnection();
+  const normalQuery = 'SELECT homework.id, title, assignment, homework.time, deadline, teacher.name ' +
+  'FROM homework JOIN teacher ' +
+  'ON homework.teacherID=teacher.id ' +
+  'WHERE teacherID=?';
+  const withCourseIDQuery = normalQuery + ' AND courseID=?';
+
   const [rows] = await conn.query(
-    'SELECT homework.id, title, assignment, homework.time, deadline, teacher.name ' +
-    'FROM homework JOIN teacher ' +
-    'ON homework.teacherID=teacher.id ' +
-    'WHERE teacherID=?',
-    [id]
+    courseID ? withCourseIDQuery : normalQuery,
+    courseID ? [id, courseID] : [id]
   )
   await conn.end();
+  // const [rows] = await conn.query(
+  //   'SELECT homework.id, title, assignment, homework.time, deadline, teacher.name ' +
+  //   'FROM homework JOIN teacher ' +
+  //   'ON homework.teacherID=teacher.id ' +
+  //   'WHERE teacherID=?',
+  //   [id]
+  // )
+  // await conn.end();
   
   const homeworks = (rows as Array<HomeworkRow>).map((row) => {
     return {
