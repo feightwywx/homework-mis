@@ -55,3 +55,24 @@ export async function getTeacherCourses(id: number) {
   return courses;
 }
 
+export async function getCourseByID(id: number) {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    `
+    SELECT course.* , teacher.name AS teacherName
+    FROM course
+    JOIN teacher ON course.teacherID = teacher.id
+    WHERE course.id = ?;`,
+    [id]
+  );
+  await conn.end();
+
+  const courses = (rows as Array<CourseRow>).map((row) => {
+    return {
+      ...row,
+      ended: row.ended === 0 ? false : true,
+    } as Course;
+  });
+
+  return courses[0];
+}

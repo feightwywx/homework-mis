@@ -36,7 +36,7 @@ export function HomeworkCard({ homework }: { homework: Homework | StudentHomewor
           )
         }
       </>}
-      extra={<Link href={`homeworkDetail/${homework.id}`}>查看</Link>}
+      extra={<Link href={`/homeworkDetail/${homework.id}`}>查看</Link>}
       style={{ marginBottom: 16, display: 'block' }}>
       <Text>发布时间：{time.toLocaleString()}</Text><br />
       <Text>截止时间：{deadline.toLocaleString()}</Text>
