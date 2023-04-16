@@ -5,7 +5,7 @@ import useSWR from "swr";
 import { Course, JsonResponse } from "../../utils/types";
 import { Button, Col, Row, Space, Spin, Typography } from "antd";
 import { CourseCard } from "../../components/CourseCard";
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from "@ant-design/icons";
 
 const { Text, Title } = Typography;
 
@@ -21,15 +21,20 @@ function CourseIndexPage() {
         <>
           <Space direction="vertical" size="middle" style={{ display: "flex" }}>
             <div>
-            <Button
-            type='primary'
-            shape='round'
-            icon={<PlusOutlined />}
-            style={{ float: 'right' }}
-            onClick={() => {}}>新建课程</Button>
+              {user?.userType === "teacher" && (
+                <Button
+                  type="primary"
+                  shape="round"
+                  icon={<PlusOutlined />}
+                  style={{ float: "right" }}
+                  onClick={() => {}}
+                >
+                  新建课程
+                </Button>
+              )}
               <Title>我的课程</Title>
             </div>
-            
+
             <Row gutter={16}>
               {courses.map((item, index) => (
                 <Col xs={24} md={12} xl={8} key={index}>
