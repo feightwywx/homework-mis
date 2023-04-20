@@ -7,6 +7,7 @@ import parseMysqlDateTime from '../utils/parseTime';
 import { HomeworkCard } from './HomeworkCard';
 import { useEffect, useState } from 'react';
 import moment, { Moment } from 'moment';
+import dayjs from 'dayjs';
 import { RangePickerProps } from 'antd/lib/date-picker';
 import useSWR from 'swr';
 import { DefaultOptionType } from 'antd/lib/select';
@@ -288,7 +289,7 @@ export function TeacherHome(): JSX.Element {
             }]}>
             <DatePicker
               format="YYYY-MM-DD HH:mm:ss"
-              showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+              showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
               disabledDate={disabledDate}
             />
           </Form.Item>

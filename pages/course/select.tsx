@@ -32,6 +32,7 @@ function CourseIndexPage() {
         </div>
       )}
       <ProTable
+        // @ts-expect-error
         request={async () => {
           const msg = await fetch("/api/course/all");
           return {
@@ -41,15 +42,15 @@ function CourseIndexPage() {
         }}
         columns={[
           {
-            title: 'ID',
-            key: 'id',
-            dataIndex: 'id'
+            title: "ID",
+            key: "id",
+            dataIndex: "id",
           },
           {
-            title: '课程名称',
-            key: 'name',
-            dataIndex: 'name'
-          }
+            title: "课程名称",
+            key: "name",
+            dataIndex: "name",
+          },
         ]}
         search={false}
       />
