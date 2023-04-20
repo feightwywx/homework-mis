@@ -7,7 +7,7 @@ export type User = {
   token: string;
 };
 
-export type UserType = 'student' | 'teacher';
+export type UserType = "student" | "teacher";
 
 export interface StudentHomework extends Homework {
   completed: boolean;
@@ -38,7 +38,7 @@ export interface HomeworkDetailContent {
   judge?: {
     score: number;
     comment: string;
-  }
+  };
 }
 
 export interface HomeworkStudentDetail {
@@ -56,12 +56,13 @@ export interface HomeworkTeacherDetail {
   content: Array<HomeworkTeacherDetailContent>;
 }
 
-export type ResponseResult = string
+export type ResponseResult =
+  | string
   | Homework[]
   | UpdateResult
   | studentRow[]
   | classRow[]
-  | User
+  | User;
 
 export interface JsonResponse<T = ResponseResult> {
   code: number;
@@ -69,7 +70,7 @@ export interface JsonResponse<T = ResponseResult> {
 }
 
 export interface UpdateResult {
-  affected: number
+  affected: number;
 }
 
 export interface Course {
@@ -79,4 +80,15 @@ export interface Course {
   ended: boolean;
   teacherID: number;
   teacherName: string;
+}
+
+export interface UserDetail {
+  actualID: string;
+  name: string;
+}
+
+export type TeacherUserDetail = UserDetail;
+
+export interface StudentUserDetail extends UserDetail {
+  class: string;
 }

@@ -1,4 +1,5 @@
 import { createMisConnection } from "./mysql";
+import { StudentUserDetail, TeacherUserDetail } from "./types";
 
 type nameRow = {
   name: string
@@ -15,6 +16,19 @@ export type classRow = {
 export type studentRow = {
   id: number,
   name: string
+}
+
+export type studentDetailRow = {
+  id: number;
+  actual_id: string;
+  name: string;
+  class: string;
+}
+
+export type teacherDetailRow = {
+  id: number;
+  actual_id: string;
+  name: string;
 }
 
 export async function getNameByToken(usertype: string, token: string) {
@@ -96,4 +110,36 @@ export async function getStudentByClass(className: string) {
   await conn.end();
 
   return (rows as Array<studentRow>)
+}
+
+export async function getStudentDetail(id: number): Promise<StudentUserDetail> {
+  const conn = await createMisConnection()
+  const [rows] = await conn.query(
+    'SELECT id, name, actual_id, class FROM student WHERE id=?', [id]
+  )
+  await conn.end();
+
+  const result = (rows as Array<studentDetailRow>).map(row => ({
+    ...row,
+    actual_id: undefined,
+    actualID: row.actual_id,
+  }))
+
+  return result[0];
+}
+
+export async function getTeacherDetail(id: number): Promise<TeacherUserDetail> {
+  const conn = await createMisConnection()
+  const [rows] = await conn.query(
+    'SELECT id, name, actual_id FROM teacher WHERE id=?', [id]
+  )
+  await conn.end();
+
+  const result = (rows as Array<studentDetailRow>).map(row => ({
+    ...row,
+    actual_id: undefined,
+    actualID: row.actual_id,
+  }))
+
+  return result[0];
 }
