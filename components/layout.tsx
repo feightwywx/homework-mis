@@ -60,7 +60,7 @@ export default function HwLayout({
                   },
                   {
                     key: "course.join",
-                    label: <Link href="/course/select">学生选课</Link>,
+                    label: <Link href="/course/select">所有课程</Link>,
                   },
                 ],
               },

@@ -11,6 +11,7 @@
     "test:ci": "jest --ci"
   },
   "dependencies": {
+    "@ant-design/pro-components": "^2.4.4",
     "antd": "^5.4.2",
     "babel-plugin-import": "^1.13.5",
     "iron-session": "^6.2.1",

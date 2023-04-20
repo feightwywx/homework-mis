@@ -76,3 +76,22 @@ export async function getCourseByID(id: number) {
 
   return courses[0];
 }
+
+export async function getCourses() {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    `
+    SELECT course.*
+    FROM course`
+  );
+  await conn.end();
+
+  const courses = (rows as Array<CourseRow>).map((row) => {
+    return {
+      ...row,
+      ended: row.ended === 0 ? false : true,
+    } as Course;
+  });
+
+  return courses;
+}
