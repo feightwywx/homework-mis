@@ -1,3 +1,4 @@
+import { ResultSetHeader } from "mysql2";
 import { createMisConnection } from "./mysql";
 import { StudentUserDetail, TeacherUserDetail } from "./types";
 
@@ -142,4 +143,24 @@ export async function getTeacherDetail(id: number): Promise<TeacherUserDetail> {
   }))
 
   return result[0];
+}
+
+export async function updateStudentPassword(id: number, password: string): Promise<number> {
+  const conn = await createMisConnection()
+  const [rows] = await conn.query(
+    'UPDATE student SET password=? WHERE id=?', [password, id]
+  )
+  await conn.end();
+
+  return (rows as ResultSetHeader).affectedRows;
+}
+
+export async function updateTeacherPassword(id: number, password: string): Promise<number> {
+  const conn = await createMisConnection()
+  const [rows] = await conn.query(
+    'UPDATE teacher SET password=? WHERE id=?', [password, id]
+  )
+  await conn.end();
+
+  return (rows as ResultSetHeader).affectedRows;
 }

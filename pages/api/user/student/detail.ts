@@ -13,7 +13,6 @@ export async function studentDetailRoute(req: NextApiRequest, res: NextApiRespon
 
   const result = await getStudentDetail(id)
   if (result) {
-    console.log(result)
     res.json(successResponse(result))
   } else {
     res.json(failResponse(statusCode.NUL_QUERY_DATA))
