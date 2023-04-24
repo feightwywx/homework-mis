@@ -4,6 +4,7 @@ import useUser from "../../utils/hooks/useUser";
 import useSWR from "swr";
 import {
   Course,
+  Exam,
   Homework,
   HomeworkDetail,
   HomeworkStudentDetail,
@@ -15,6 +16,7 @@ import { CourseCard } from "../../components/CourseCard";
 import { ArrowLeftOutlined, UserOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { HomeworkCard } from "../../components/HomeworkCard";
+import { ExamCard } from "../../components/ExamCard";
 
 const { Text, Title } = Typography;
 
@@ -35,6 +37,9 @@ const CourseIndexPage: NextPage = () => {
     `/api/course/${user?.userType}/info/${coid}`
   );
   const course = (courseData as JsonResponse<Course>)?.result;
+
+  const { data: examData } = useSWR(`/api/exam/course/${coid}`)
+  const exams = (examData as JsonResponse<Exam[]>)?.result;
 
   return (
     <HwLayout>
@@ -70,6 +75,15 @@ const CourseIndexPage: NextPage = () => {
               {homeworks.map((item, index) => (
                 <Col xs={24} md={12} xl={8} key={index}>
                   <HomeworkCard homework={item} />
+                </Col>
+              ))}
+            </Row>
+
+            <Title level={2}>考试</Title>
+            <Row gutter={16}>
+              {exams.map((item, index) => (
+                <Col xs={24} md={12} xl={8} key={index}>
+                  <ExamCard exam={item} />
                 </Col>
               ))}
             </Row>

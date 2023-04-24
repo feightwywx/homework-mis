@@ -92,3 +92,11 @@ export type TeacherUserDetail = UserDetail;
 export interface StudentUserDetail extends UserDetail {
   class: string;
 }
+
+export interface Exam {
+  id: number;
+  name: string;
+  time: string;
+  endtime: string;
+  location: string;
+}

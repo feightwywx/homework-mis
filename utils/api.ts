@@ -16,7 +16,7 @@ export function failResponse(code: number, result?: ResponseResult) {
   } as JsonResponse
 }
 
-export async function parseIdFromReqest(req: NextApiRequest, userType: UserType) {
+export async function parseIdFromReqest(req: NextApiRequest, userType?: UserType) {
   let token = undefined;
   if (req.session?.user?.token) {
     token = req.session.user?.token
@@ -24,7 +24,29 @@ export async function parseIdFromReqest(req: NextApiRequest, userType: UserType)
     token = await req.body.token;
   }
 
-  return await getId(userType, token);
+  if (userType) {
+    return await getId(userType, token);
+  } else if (req.session.user?.userType) {
+    return await getId(req.session.user.userType, token);
+  } else {
+    throw new Error('Neither user type in session nor parament')
+  }
+  
+}
+
+export async function parseUserTypeFromRequest(req: NextApiRequest): Promise<UserType | null> {
+  const { usertype: bodyUserType } = await req.body;
+  if (bodyUserType) {
+    if (bodyUserType === 'student' || bodyUserType === 'teacher') {
+      return bodyUserType;
+    }
+  }
+
+  if (req.session.user) {
+    return req.session.user.userType;
+  }
+
+  return null
 }
 
 export const statusCode = {
@@ -33,6 +55,7 @@ export const statusCode = {
   BODY_PARAM_REQUIRED: 101,
   URL_PARAM_REQUIRED: 102,
   TOKEN_INVALID: 200,
+  USER_TYPE_NOT_SUPPORTED: 201,
   NUL_QUERY_DATA: 300,
   NUL_QUERY_PARAM: 301,
   BAD_UPDATE: 400
