@@ -78,9 +78,7 @@ export default function HwLayout({
           <div className={styles.user}>
             <Avatar icon={<UserOutlined />} />
             <Dropdown
-              overlay={
-                <Menu
-                  items={[
+              menu={{items: [
                     {
                       key: "my",
                       label: <Link href='/my'>个人资料</Link>,
@@ -89,10 +87,8 @@ export default function HwLayout({
                       key: "logout",
                       label: <div onClick={onLogoutClick}>注销</div>,
                     },
-                  ]}
-                  style={{ marginTop: 12, padding: 12 }}
-                />
-              }
+                  ]
+              }}
               trigger={["click"]}
             >
               <a
