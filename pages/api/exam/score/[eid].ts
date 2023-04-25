@@ -2,13 +2,13 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
 import { failResponse, parseIdFromReqest, parseUserTypeFromRequest, statusCode, successResponse } from "../../../../utils/api";
 import { sessionOptions } from "../../../../utils/session";
-import { getExamsByCourseID } from "../../../../utils/exam";
+import { getExamByID, getExamScore, getExamsByCourseID } from "../../../../utils/exam";
 
-export async function examCourseRoute(req: NextApiRequest, res: NextApiResponse) {
-  const { coid } = req.query;
+export async function examScoreRoute(req: NextApiRequest, res: NextApiResponse) {
+  const { eid } = req.query;
 
-  if (!coid) {
-    res.json(failResponse(statusCode.ROUTER_PARAM_REQUIRED, 'coid required'));
+  if (!eid) {
+    res.json(failResponse(statusCode.ROUTER_PARAM_REQUIRED, 'eid required'));
     return;
   }
 
@@ -25,7 +25,7 @@ export async function examCourseRoute(req: NextApiRequest, res: NextApiResponse)
     return;
   }
   
-  const result = await getExamsByCourseID(+coid);
+  const result = await getExamScore(id, +eid);
   
   if (result) {
     res.json(successResponse(result))
@@ -35,4 +35,4 @@ export async function examCourseRoute(req: NextApiRequest, res: NextApiResponse)
   return;
 }
 
-export default withIronSessionApiRoute(examCourseRoute, sessionOptions)
+export default withIronSessionApiRoute(examScoreRoute, sessionOptions)
