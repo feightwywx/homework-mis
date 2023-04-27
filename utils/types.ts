@@ -1,8 +1,9 @@
 import { classRow, studentRow } from "./user";
 
 export type User = {
+  actual_id: string;   // 登录名
   isLoggedIn: boolean;
-  name: string;
+  name: string;   // 登录名，如果有显示名称则会被覆盖
   userType: UserType;
   token: string;
 };
@@ -99,4 +100,11 @@ export interface Exam {
   time: string;
   endtime: string;
   location: string;
+}
+
+export interface ExamResult {
+  id: number;
+  studentID: number;
+  studentName: string;
+  score: number | null;
 }

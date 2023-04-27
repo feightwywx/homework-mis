@@ -8,21 +8,23 @@ import {
   successResponse,
 } from "../../../../utils/api";
 import { sessionOptions } from "../../../../utils/session";
-import {
-  getExamByID,
-  getStudentExamScore,
-  getExamsByCourseID,
-  getTeacherExamScore,
-} from "../../../../utils/exam";
+import { updateExamScore } from "../../../../utils/exam";
 
 export async function examScoreRoute(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { eid } = req.query;
+  const { erid } = req.query;
 
-  if (!eid) {
-    res.json(failResponse(statusCode.ROUTER_PARAM_REQUIRED, "eid required"));
+  if (!erid) {
+    res.json(failResponse(statusCode.ROUTER_PARAM_REQUIRED, "erid required"));
+    return;
+  }
+
+  const { score } = await req.body;
+
+  if (!score) {
+    res.json(failResponse(statusCode.BODY_PARAM_REQUIRED, "score required"));
     return;
   }
 
@@ -33,23 +35,16 @@ export async function examScoreRoute(
   }
 
   const userType = await parseUserTypeFromRequest(req);
-  if (!userType) {
+  if (!userType || userType === "student") {
     res.json(failResponse(statusCode.USER_TYPE_NOT_SUPPORTED));
     return;
   }
 
-  if (userType === "student") {
-    const result = await getStudentExamScore(id, +eid);
-
-    if (result) {
-      res.json(successResponse(result));
-    } else {
-      res.json(failResponse(statusCode.NUL_QUERY_DATA));
-    }
-  } else if (userType === "teacher") {
-    const result = await getTeacherExamScore(+eid);
-
-    if (result) {
+  console.log(+erid, score);
+  if (userType === "teacher") {
+    const result = await updateExamScore(+erid, score);
+    if (result > 0) {
+      
       res.json(successResponse(result));
     } else {
       res.json(failResponse(statusCode.NUL_QUERY_DATA));

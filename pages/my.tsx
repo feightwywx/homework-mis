@@ -35,7 +35,7 @@ const { Text, Title } = Typography;
 
 function MyIndexPage() {
   const { user } = useUser();
-  const [messageApi] = message.useMessage();
+  const [messageApi, messageContext] = message.useMessage();
 
   const { data: userDetailData } = useSWR(`/api/user/${user?.userType}/detail`);
   const userDetail = (
@@ -50,48 +50,56 @@ function MyIndexPage() {
     console.log(values);
     setModalConfirmLoading(true);
 
-    if (!user) return;
-    const validateResponse = await fetch(`/api/user/verify`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username: user.name,
-        password: values["old-password"],
-        usertype: user.userType,
-      }),
-    });
-    const validateResponseJson =
-      (await validateResponse.json()) as JsonResponse;
-    console.log(validateResponseJson);
-    if (validateResponseJson.code !== 200) {
-      message.error("旧密码错误");
-      return;
-    }
+    try {
+      if (!user) return;
+      const validateResponse = await fetch(`/api/user/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: user.actual_id,
+          password: values["old-password"],
+          usertype: user.userType,
+        }),
+      });
+      const validateResponseJson =
+        (await validateResponse.json()) as JsonResponse;
+      console.log(validateResponseJson);
+      if (validateResponseJson.code !== 0) {
+        message.error("旧密码错误");
+        return;
+      }
 
-    const changePasswordResponse = await fetch(`/api/user/changePassword`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        password: values["new-password"],
-        usertype: user.userType,
-      }),
-    });
-    const changePasswordResponseJson = await changePasswordResponse.json();
-    if (
-      validateResponseJson.code === 200 &&
-      // @ts-expect-error
-      validateResponseJson.result !== 0
-    ) {
-      message.success("修改成功");
-      setPasswordModalOpen(false);
+      const changePasswordResponse = await fetch(`/api/user/changePassword`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          password: values["new-password"],
+          usertype: user.userType,
+        }),
+      });
+      const changePasswordResponseJson =
+        (await changePasswordResponse.json()) as JsonResponse<number>;
+      if (changePasswordResponseJson.code === 0) {
+        message.success("修改成功");
+        setPasswordModalOpen(false);
+      } else {
+        message.error("遇到了未知错误");
+      }
+    } catch (e) {
+      if ((e as Error).message === "Failed to fetch") {
+        messageApi.error("网络错误");
+      } else {
+        messageApi.error("遇到了未知错误");
+      }
+      console.error(e);
+    } finally {
       setModalConfirmLoading(false);
-    } else {
-      message.error("遇到了未知错误");
     }
   };
 
   return (
     <HwLayout>
+      {messageContext}
       {userDetail ? (
         <>
           <Space
@@ -153,6 +161,7 @@ function MyIndexPage() {
         onOk={() => {
           passwordForm.submit();
         }}
+        confirmLoading={modalConfirmLoading}
       >
         <Form
           form={passwordForm}

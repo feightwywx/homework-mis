@@ -20,6 +20,7 @@ import { useMediaPredicate } from "react-media-hook";
 import useUser from "../../utils/hooks/useUser";
 import {
   Exam,
+  ExamResult,
   HomeworkDetail,
   HomeworkDetailContent,
   HomeworkStudentDetail,
@@ -113,9 +114,164 @@ export const StudentExamScore: React.FC<{ eid: number }> = ({ eid }) => {
 };
 
 export const TeacherUploadScore: React.FC<{ eid: number }> = ({ eid }) => {
+  type TableDataType = {
+    id: number;
+    name: string;
+    judged: boolean;
+    score: number | null;
+  };
+
+  const [messageApi, messageContext] = message.useMessage();
+
+  const { data: examScoresData, mutate: mutateExamScores } = useSWR<
+    JsonResponse<ExamResult[]>
+  >(`/api/exam/score/${eid}`);
+  const examScores = examScoresData?.result;
+  const examScoresDataSource: TableDataType[] | undefined = examScores?.map(
+    (item) => ({
+      id: item.id,
+      name: item.studentName,
+      judged: !!item.score,
+      score: item.score,
+    })
+  );
+
+  const [judgeModalOpen, setJudgeModalOpen] = useState(false);
+  const [confirmJudgeLoading, setConfirmJudgeLoading] = useState(false);
+  const [currentResultID, setCurrentResultID] = useState(0);
+
+  const [judgeForm] = Form.useForm();
+
+  const judgeFormSubmitHandler = async (values: { score: number }) => {
+    setConfirmJudgeLoading(true);
+    console.log(currentResultID, values.score);
+
+    try {
+      const submitResponse = await fetch(`/api/exam/judge/${currentResultID}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          score: values.score,
+        }),
+      });
+      const submitResponseJson = (await submitResponse.json()) as
+        | JsonResponse<number>
+        | undefined;
+      if (submitResponseJson) {
+        console.log(submitResponseJson);
+        if (submitResponseJson.code === 0) {
+          messageApi.success("已提交");
+          mutateExamScores();
+          setJudgeModalOpen(false);
+        } else {
+          messageApi.error(`未知错误：${submitResponseJson.code}`);
+        }
+      }
+    } catch (e) {
+      if ((e as Error).message === "Failed to fetch") {
+        messageApi.error("网络错误");
+      } else {
+        messageApi.error("遇到了未知错误");
+      }
+      console.error(e);
+    } finally {
+      setConfirmJudgeLoading(false);
+    }
+  };
+
   return (
     <>
+      {messageContext}
       <Title level={2}>成绩录入</Title>
+      <Table
+        dataSource={examScoresDataSource}
+        columns={
+          [
+            // { title: "id", dataIndex: "id", key: "id" },
+            {
+              title: "姓名",
+              dataIndex: "name",
+              key: "name",
+            },
+            {
+              title: "评分状态",
+              dataIndex: "judged",
+              key: "judged",
+              render: (_, record) =>
+                record.judged ? (
+                  <Tag color="green">已评分</Tag>
+                ) : (
+                  <Tag>未评分</Tag>
+                ),
+              filters: [
+                {
+                  text: "已评分",
+                  value: true,
+                },
+                {
+                  text: "未评分",
+                  value: false,
+                },
+              ],
+              onFilter: (value: boolean, record) => value === record.judged,
+            },
+            {
+              title: "成绩",
+              dataIndex: "score",
+              key: "score",
+            },
+            {
+              title: "操作",
+              key: "action",
+              render: (_, record) => (
+                <Space size="small">
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setJudgeModalOpen(true);
+                      setCurrentResultID(record.id);
+                    }}
+                  >
+                    录入成绩
+                  </Button>
+                </Space>
+              ),
+            },
+          ] as ColumnsType<TableDataType>
+        }
+      />
+      <Modal
+        open={judgeModalOpen}
+        title="提交分数"
+        onCancel={() => {
+          setJudgeModalOpen(false);
+        }}
+        confirmLoading={confirmJudgeLoading}
+        onOk={() => {
+          judgeForm.submit();
+        }}
+      >
+        <Form form={judgeForm} onFinish={judgeFormSubmitHandler}>
+          <Form.Item
+            label="得分"
+            name="score"
+            rules={[
+              {
+                required: true,
+                message: "请输入得分！",
+              },
+              {
+                type: "number",
+                min: 0,
+                max: 100,
+                message: "得分需要在0～100之间！",
+              },
+            ]}
+          >
+            <InputNumber />
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   );
 };

@@ -1,5 +1,6 @@
+import { ResultSetHeader } from "mysql2";
 import { createMisConnection } from "./mysql";
-import { Exam } from "./types";
+import { Exam, ExamResult } from "./types";
 
 type ExamRow = {
   id: number;
@@ -12,7 +13,12 @@ type ExamRow = {
 
 type ExamResultRow = {
   score: number | null;
-}
+};
+type DetailedExamResultRow = ExamResultRow & {
+  id: number;
+  studentID: number;
+  studentName: string;
+};
 
 export async function getExamsByCourseID(coid: number): Promise<Exam[]> {
   const conn = await createMisConnection();
@@ -25,7 +31,7 @@ export async function getExamsByCourseID(coid: number): Promise<Exam[]> {
   );
   await conn.end();
 
-  const exams = (rows as Array<ExamRow>);
+  const exams = rows as Array<ExamRow>;
 
   return exams;
 }
@@ -46,7 +52,10 @@ export async function getExamByID(eid: number): Promise<Exam> {
   return exams;
 }
 
-export async function getExamScore(uid: number, eid: number): Promise<number | null> {
+export async function getStudentExamScore(
+  uid: number,
+  eid: number
+): Promise<number | null> {
   const conn = await createMisConnection();
   const [rows] = await conn.query(
     `
@@ -58,7 +67,38 @@ export async function getExamScore(uid: number, eid: number): Promise<number | n
   await conn.end();
 
   const score = (rows as Array<ExamResultRow>)[0].score;
-  console.log('score', score);
+  console.log("score", score);
 
   return score;
+}
+
+export async function getTeacherExamScore(eid: number): Promise<ExamResult[]> {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    `
+    SELECT exam_result.id, studentID, student.name AS studentName, score
+    FROM exam_result
+    JOIN student ON student.id = exam_result.studentID
+    WHERE exam_result.examID = ?;`,
+    [eid]
+  );
+  await conn.end();
+
+  const score = rows as Array<DetailedExamResultRow>;
+
+  return score;
+}
+
+export async function updateExamScore(
+  erid: number,
+  score: number
+): Promise<number> {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    `UPDATE exam_result SET score=? WHERE id=?;`,
+    [score, erid]
+  );
+  await conn.end();
+
+  return (rows as ResultSetHeader).affectedRows;
 }

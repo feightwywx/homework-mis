@@ -24,7 +24,7 @@ async function verifyRoute(req: NextApiRequest, res: NextApiResponse) {
 
   if (usertype === "student") {
     const result = await updateStudentPassword(id, password);
-    if (result) {
+    if (result > 0) {
       console.log(result);
       res.json(successResponse(result));
     } else {
