@@ -10,6 +10,8 @@ type StudentHomeworkRow = {
   deadline: string;
   completed: number;
   name: string;
+  courseID: number;
+  courseName: string;
 }
 
 type HomeworkRow = {
@@ -19,6 +21,8 @@ type HomeworkRow = {
   time: string;
   deadline: string;
   name: string;
+  courseID: number;
+  courseName: string;
 }
 
 type HomeworkDetailRow = {
@@ -49,11 +53,13 @@ type TeacherHomeworkDetailRow = {
 export async function getStudentHomeworks(id: number, courseID?: number) {
   console.log(courseID)
   const conn = await createMisConnection();
-  const normalQuery = 'SELECT homework.id, title, assignment, homework.time, deadline, completed, teacher.name ' +
-  'FROM homework_content ' +
-  'LEFT JOIN homework ON homework.id=homework_content.homeworkID ' +
-  'LEFT JOIN teacher ON homework.teacherID=teacher.id ' +
-  'WHERE studentID=?';
+  const normalQuery = `
+  SELECT homework.id, title, assignment, homework.time, deadline, completed, teacher.name, course.name AS courseName, course.id AS courseID
+  FROM homework_content
+  LEFT JOIN homework ON homework.id=homework_content.homeworkID
+  LEFT JOIN course ON homework.courseID=course.id
+  LEFT JOIN teacher ON course.teacherID=teacher.id
+  WHERE studentID=?`;
   const withCourseIDQuery = normalQuery + ' AND courseID=?';
 
   const [rows] = await conn.query(
@@ -75,10 +81,13 @@ export async function getStudentHomeworks(id: number, courseID?: number) {
 
 export async function getTeacherHomeworks(id: number, courseID?: number) {
   const conn = await createMisConnection();
-  const normalQuery = 'SELECT homework.id, title, assignment, homework.time, deadline, teacher.name ' +
-  'FROM homework JOIN teacher ' +
-  'ON homework.teacherID=teacher.id ' +
-  'WHERE teacherID=?';
+  const normalQuery = `
+  SELECT homework.id, title, assignment, homework.time, deadline, teacher.name, course.name AS courseName, course.id AS courseID
+  FROM homework
+  LEFT JOIN course ON homework.courseID=course.id
+  LEFT JOIN teacher ON course.teacherID=teacher.id
+  WHERE teacher.id=?
+  `;
   const withCourseIDQuery = normalQuery + ' AND courseID=?';
 
   const [rows] = await conn.query(

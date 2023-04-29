@@ -7,44 +7,61 @@ import Link from 'next/link';
 
 const { Text } = Typography
 
-export function HomeworkCard({ homework }: { homework: Homework | StudentHomework; }): JSX.Element {
+export function HomeworkCard({ homework, withBottom }: { homework: Homework | StudentHomework; withBottom?: boolean }): JSX.Element {
   const time = parseMysqlDateTime(homework.time)
   const deadline = parseMysqlDateTime(homework.deadline);
   const currtime = new Date(Date.now())
 
   return (
-    <Card title={
-      <>
-        {homework.title}
-        {
-          ((homework as StudentHomework).completed
-          && <Tag
-            icon={<CheckCircleOutlined />}
-            color='success'
-            style={{
-              marginLeft: 8,
-              verticalAlign: 'middle'
-            }}
-          >已完成</Tag>) || (
-            currtime > deadline
-            && <Tag
-            style={{
-              marginLeft: 8,
-              verticalAlign: 'middle'
-            }}
-          >已过期</Tag>
-          )
-        }
-      </>}
+    <Card
+      title={
+        <>
+          {homework.title}
+          {((homework as StudentHomework).completed && (
+            <Tag
+              icon={<CheckCircleOutlined />}
+              color="success"
+              style={{
+                marginLeft: 8,
+                verticalAlign: "middle",
+              }}
+            >
+              已完成
+            </Tag>
+          )) ||
+            (currtime > deadline && (
+              <Tag
+                style={{
+                  marginLeft: 8,
+                  verticalAlign: "middle",
+                }}
+              >
+                已过期
+              </Tag>
+            ))}
+        </>
+      }
       extra={<Link href={`/homeworkDetail/${homework.id}`}>查看</Link>}
-      style={{ marginBottom: 16, display: 'block' }}>
-      <Text>发布时间：{time.toLocaleString()}</Text><br />
+      style={{ marginBottom: 16, display: "block" }}
+    >
+      <Text>发布时间：{time.toLocaleString()}</Text>
+      <br />
       <Text>截止时间：{deadline.toLocaleString()}</Text>
-      <Divider style={{ margin: '16px 0px' }} />
-      <div>
-        <Avatar size={'small'} icon={<UserOutlined />} style={{ marginTop: -4 }} />
-        <Text style={{ marginLeft: 12 }}><b>{homework.teacher}</b>布置的作业</Text>
-      </div>
+      {withBottom && (
+        <>
+          <Divider style={{ margin: "16px 0px" }} />
+          <div>
+            <Avatar
+              size={"small"}
+              icon={<UserOutlined />}
+              style={{ marginTop: -4 }}
+            />
+            <Text style={{ marginLeft: 12 }}>
+              <b>{homework.teacher}</b>布置的作业
+            </Text>
+          </div>
+        </>
+      )}
     </Card>
   );
 }

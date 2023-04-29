@@ -21,6 +21,8 @@ export interface Homework {
   time: string;
   deadline: string;
   teacher: string;
+  courseName: string;
+  courseID: string;
 }
 
 export interface HomeworkDetail {
