@@ -82,7 +82,7 @@ export async function examScoreRoute(
       })
     );
 
-    if (result) {
+    if (result > 0) {
       res.json(successResponse(result));
     } else {
       res.json(failResponse(statusCode.NUL_QUERY_DATA));

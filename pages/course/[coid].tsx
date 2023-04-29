@@ -284,9 +284,7 @@ const AssignExamButton: React.FC = () => {
 
   const { user } = useUser();
 
-  const { mutate: mutateHomework } = useSWR(
-    `/api/course/${user?.userType}/homework/${coid}`
-  );
+  const { mutate: mutateExam } = useSWR(`/api/exam/course/${coid}`);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -331,7 +329,7 @@ const AssignExamButton: React.FC = () => {
           messageApi.success("考试已下发");
           form.resetFields();
           setModalOpen(false);
-          mutateHomework();
+          mutateExam();
         } else {
           messageApi.error(`未知错误：${json.code}`);
         }
