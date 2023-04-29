@@ -5,6 +5,7 @@ import useSWR from "swr";
 import {
   Course,
   Exam,
+  ExamAssginRequestBody,
   Homework,
   HomeworkDetail,
   HomeworkStudentDetail,
@@ -107,7 +108,10 @@ const CourseIndexPage: NextPage = () => {
                 ))}
             </Row>
 
-            <Title level={2}>考试</Title>
+            <div style={{ display: "flow" }}>
+              {user?.userType === "teacher" && <AssignExamButton />}
+              <Title level={2}>考试</Title>
+            </div>
             <Row gutter={16}>
               {exams
                 .sort(
@@ -264,6 +268,158 @@ const AssignHomeworkButton: React.FC = () => {
               format="YYYY-MM-DD HH:mm:ss"
               showTime={{
                 defaultValue: dayjs("00:00:00", "HH:mm:ss"),
+              }}
+              disabledDate={disabledDate}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
+  );
+};
+
+const AssignExamButton: React.FC = () => {
+  const router = useRouter();
+  const { coid } = router.query;
+
+  const { user } = useUser();
+
+  const { mutate: mutateHomework } = useSWR(
+    `/api/course/${user?.userType}/homework/${coid}`
+  );
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [form] = Form.useForm();
+  const [messageApi, messageContext] = message.useMessage();
+
+  const disabledDate: RangePickerProps["disabledDate"] = (current) => {
+    return current && current < dayjs().startOf("day");
+  };
+
+  async function assignClickHandler(values: {
+    title: string;
+    location: string;
+    times: Dayjs[];
+  }) {
+    if (!coid || Array.isArray(coid) || isNaN(+coid)) {
+      console.error("coid不合法：", coid);
+      return;
+    }
+    const parsedTimes = values.times.map((time) =>
+      time.format("YYYY-MM-DD HH:mm:ss")
+    );
+    setConfirmLoading(true);
+
+    fetch(`/api/exam/assign`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: values.title,
+        location: values.location,
+        time: parsedTimes[0],
+        endtime: parsedTimes[1],
+        courseID: +coid,
+      } as ExamAssginRequestBody),
+    })
+      .then((res) => {
+        setConfirmLoading(false);
+        return res.json() as Promise<JsonResponse>;
+      })
+      .then((json) => {
+        if (json.code === 0) {
+          messageApi.success("考试已下发");
+          form.resetFields();
+          setModalOpen(false);
+          mutateHomework();
+        } else {
+          messageApi.error(`未知错误：${json.code}`);
+        }
+      })
+      .catch((e) => {
+        if ((e as Error).message === "Failed to fetch") {
+          messageApi.error("网络错误");
+        } else {
+          messageApi.error("遇到了未知错误");
+        }
+        console.error(e);
+      })
+      .finally(() => {
+        setConfirmLoading(false);
+      });
+  }
+
+  return (
+    <>
+      {messageContext}
+      <Button
+        type="primary"
+        shape="round"
+        icon={<FormOutlined />}
+        style={{ float: "right" }}
+        onClick={() => {
+          setModalOpen(true);
+        }}
+      >
+        下发考试
+      </Button>
+      <Modal
+        open={modalOpen}
+        title="考试布置"
+        onCancel={() => {
+          setModalOpen(false);
+        }}
+        width={"80vw"}
+        style={{ minHeight: "80vh" }}
+        confirmLoading={confirmLoading}
+        onOk={() => {
+          form.submit();
+        }}
+      >
+        <Form
+          form={form}
+          autoComplete="off"
+          requiredMark="optional"
+          onFinish={assignClickHandler}
+        >
+          <Form.Item
+            label="考试标题"
+            name="title"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="考试地点"
+            name="location"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="考试时间"
+            name="times"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <DatePicker.RangePicker
+              format="YYYY-MM-DD HH:mm:ss"
+              showTime={{
+                defaultValue: [
+                  dayjs("00:00:00", "HH:mm:ss"),
+                  dayjs("00:00:00", "HH:mm:ss"),
+                ],
               }}
               disabledDate={disabledDate}
             />

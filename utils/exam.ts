@@ -102,3 +102,27 @@ export async function updateExamScore(
 
   return (rows as ResultSetHeader).affectedRows;
 }
+
+export async function insertExamAssign(courseID: number, title: string, location: string, time: string, endtime: string) {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    'INSERT INTO exam (name, location, time, endtime, courseID) ' +
+    'VALUES (?, ?, ?, ?, ?) ',
+    [title, location, time, endtime, courseID]
+  );
+  await conn.end();
+
+  return (rows as ResultSetHeader).insertId
+}
+
+export async function insertExamTarget(studentID: number, examID: number) {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    'INSERT INTO exam_result (studentID, examID) ' +
+    'VALUES (?, ?) ',
+    [studentID, examID]
+  );
+  await conn.end();
+
+  return (rows as ResultSetHeader).affectedRows
+}

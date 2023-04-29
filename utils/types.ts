@@ -108,3 +108,11 @@ export interface ExamResult {
   studentName: string;
   score: number | null;
 }
+
+export type ExamAssginRequestBody = {
+  title: string;
+  location: string;
+  time: string;
+  endtime: string;
+  courseID: number;
+}
