@@ -8,6 +8,10 @@ type CourseRow = {
   ended: number;
   teacherID: number;
   teacherName: string;
+};
+
+type StudentIDRow = {
+  studentID: number;
 }
 
 export async function getStudentCourses(id: number) {
@@ -94,4 +98,22 @@ export async function getCourses() {
   });
 
   return courses;
+}
+
+export async function getCourseStudents(coid: number): Promise<number[]> {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    `
+    SELECT studentID
+    FROM course_student
+    WHERE courseID=?;`,
+    [coid]
+  );
+  await conn.end();
+
+  const students = (rows as Array<StudentIDRow>).map((row) => {
+    return row.studentID
+  });
+
+  return students;
 }

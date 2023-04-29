@@ -266,6 +266,18 @@ export async function insertAssign(id: number, title: string, assignment: string
   return (rows as ResultSetHeader).insertId
 }
 
+export async function insertAssign_v2(teacherID: number, courseID: number, title: string, assignment: string, deadline: string) {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    'INSERT INTO homework (title, assignment, deadline, teacherID, courseID) ' +
+    'VALUES (?, ?, ?, ?, ?) ',
+    [title, assignment, deadline, teacherID, courseID]
+  );
+  await conn.end();
+
+  return (rows as ResultSetHeader).insertId
+}
+
 export async function insertTarget(hwid: number, target: number) {
   const conn = await createMisConnection();
   const [rows] = await conn.query(

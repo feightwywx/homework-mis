@@ -21,7 +21,7 @@ function CourseIndexPage() {
         <>
           <Space direction="vertical" size="middle" style={{ display: "flex" }}>
             <div>
-              {user?.userType === "teacher" && (
+              {/* {user?.userType === "teacher" && (
                 <Button
                   type="primary"
                   shape="round"
@@ -31,7 +31,7 @@ function CourseIndexPage() {
                 >
                   新建课程
                 </Button>
-              )}
+              )} */}
               <Title>我的课程</Title>
             </div>
 
