@@ -53,21 +53,7 @@ export default function HwLayout({
               },
               {
                 key: "course",
-                label: "课程",
-                children: [
-                  {
-                    key: "course.my",
-                    label: <Link href="/course">我的课程</Link>,
-                  },
-                  {
-                    key: "course.join",
-                    label: <Link href="/course/select">所有课程</Link>,
-                  },
-                ],
-              },
-              {
-                key: "homework",
-                label: "作业",
+                label: <Link href="/course">课程</Link>,
               },
             ]}
             style={{ float: "left" }}
@@ -78,16 +64,17 @@ export default function HwLayout({
           <div className={styles.user}>
             <Avatar icon={<UserOutlined />} />
             <Dropdown
-              menu={{items: [
-                    {
-                      key: "my",
-                      label: <Link href='/my'>个人资料</Link>,
-                    },
-                    {
-                      key: "logout",
-                      label: <div onClick={onLogoutClick}>注销</div>,
-                    },
-                  ]
+              menu={{
+                items: [
+                  {
+                    key: "my",
+                    label: <Link href="/my">个人资料</Link>,
+                  },
+                  {
+                    key: "logout",
+                    label: <div onClick={onLogoutClick}>注销</div>,
+                  },
+                ],
               }}
               trigger={["click"]}
             >
