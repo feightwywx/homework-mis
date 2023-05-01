@@ -102,6 +102,8 @@ export interface Exam {
   time: string;
   endtime: string;
   location: string;
+  courseID: number;
+  courseName: string;
 }
 
 export interface ExamResult {

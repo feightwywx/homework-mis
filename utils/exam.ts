@@ -9,6 +9,7 @@ type ExamRow = {
   endtime: string;
   location: string;
   courseID: number;
+  courseName: string;
 };
 
 type ExamResultRow = {
@@ -24,8 +25,9 @@ export async function getExamsByCourseID(coid: number): Promise<Exam[]> {
   const conn = await createMisConnection();
   const [rows] = await conn.query(
     `
-    SELECT *
+    SELECT exam.*, course.name AS courseName
     FROM exam
+    LEFT JOIN course ON exam.courseID = course.id
     WHERE courseID=?`,
     [coid]
   );
@@ -40,9 +42,10 @@ export async function getExamByID(eid: number): Promise<Exam> {
   const conn = await createMisConnection();
   const [rows] = await conn.query(
     `
-    SELECT *
+    SELECT exam.*, course.name AS courseName
     FROM exam
-    WHERE id=?`,
+    LEFT JOIN course ON exam.courseID = course.id
+    WHERE exam.id=?`,
     [eid]
   );
   await conn.end();
@@ -103,26 +106,66 @@ export async function updateExamScore(
   return (rows as ResultSetHeader).affectedRows;
 }
 
-export async function insertExamAssign(courseID: number, title: string, location: string, time: string, endtime: string) {
+export async function insertExamAssign(
+  courseID: number,
+  title: string,
+  location: string,
+  time: string,
+  endtime: string
+) {
   const conn = await createMisConnection();
   const [rows] = await conn.query(
-    'INSERT INTO exam (name, location, time, endtime, courseID) ' +
-    'VALUES (?, ?, ?, ?, ?) ',
+    "INSERT INTO exam (name, location, time, endtime, courseID) " +
+      "VALUES (?, ?, ?, ?, ?) ",
     [title, location, time, endtime, courseID]
   );
   await conn.end();
 
-  return (rows as ResultSetHeader).insertId
+  return (rows as ResultSetHeader).insertId;
 }
 
 export async function insertExamTarget(studentID: number, examID: number) {
   const conn = await createMisConnection();
   const [rows] = await conn.query(
-    'INSERT INTO exam_result (studentID, examID) ' +
-    'VALUES (?, ?) ',
+    "INSERT INTO exam_result (studentID, examID) " + "VALUES (?, ?) ",
     [studentID, examID]
   );
   await conn.end();
 
-  return (rows as ResultSetHeader).affectedRows
+  return (rows as ResultSetHeader).affectedRows;
+}
+
+export async function getStudentExams(studentID: number): Promise<Exam[]> {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    `
+    SELECT exam.*, course.name AS courseName
+    FROM exam
+    LEFT JOIN course ON exam.courseID = course.id
+    LEFT JOIN course_student ON exam.courseID = course_student.courseID
+    WHERE course_student.studentID = ?`,
+    [studentID]
+  );
+  await conn.end();
+
+  const exams = rows as Array<ExamRow>;
+
+  return exams;
+}
+
+export async function getTeacherExams(teacherID: number): Promise<Exam[]> {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    `
+    SELECT exam.*, course.name AS courseName
+    FROM exam
+    LEFT JOIN course ON exam.courseID = course.id
+    WHERE course.teacherID = ?`,
+    [teacherID]
+  );
+  await conn.end();
+
+  const exams = rows as Array<ExamRow>;
+
+  return exams;
 }
