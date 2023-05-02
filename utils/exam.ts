@@ -1,6 +1,6 @@
 import { ResultSetHeader } from "mysql2";
 import { createMisConnection } from "./mysql";
-import { Exam, ExamResult } from "./types";
+import { Exam, ExamContentScore, ExamResult } from "./types";
 
 type ExamRow = {
   id: number;
@@ -19,6 +19,13 @@ type DetailedExamResultRow = ExamResultRow & {
   id: number;
   studentID: number;
   studentName: string;
+};
+
+type ExamContentScoreRow = {
+  id: number;
+  score?: number;
+  examID: number;
+  examName: string;
 };
 
 export async function getExamsByCourseID(coid: number): Promise<Exam[]> {
@@ -168,4 +175,26 @@ export async function getTeacherExams(teacherID: number): Promise<Exam[]> {
   const exams = rows as Array<ExamRow>;
 
   return exams;
+}
+
+export async function getExamScoresByCourse(
+  studentID: number,
+  courseID: number
+): Promise<ExamContentScore[]> {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    `
+    SELECT exam_result.id, exam_result.score, exam.id AS examID, exam.name AS examName
+    FROM exam_result
+    JOIN exam ON exam.id = exam_result.examID
+    WHERE exam_result.studentID = 1 AND exam.courseID = 1;`,
+    [studentID, courseID]
+  );
+  await conn.end();
+
+  const result = (rows as ExamContentScoreRow[]).map((item) => ({
+    ...item,
+    score: item.score ? +item.score : item.score
+  }));
+  return result;
 }
