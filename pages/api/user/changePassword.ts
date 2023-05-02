@@ -1,9 +1,6 @@
-import { User } from "../../../utils/types";
-
 import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "../../../utils/session";
 import { NextApiRequest, NextApiResponse } from "next";
-import { getToken } from "../../../utils/token";
 import {
   failResponse,
   parseIdFromReqest,
@@ -25,7 +22,6 @@ async function verifyRoute(req: NextApiRequest, res: NextApiResponse) {
   if (usertype === "student") {
     const result = await updateStudentPassword(id, password);
     if (result > 0) {
-      console.log(result);
       res.json(successResponse(result));
     } else {
       res.json(failResponse(statusCode.NUL_QUERY_DATA));
@@ -33,7 +29,6 @@ async function verifyRoute(req: NextApiRequest, res: NextApiResponse) {
   } else {
     const result = await updateTeacherPassword(id, password);
     if (result) {
-      console.log(result);
       res.json(successResponse(result));
     } else {
       res.json(failResponse(statusCode.NUL_QUERY_DATA));

@@ -7,8 +7,6 @@ import {
   Exam,
   ExamAssginRequestBody,
   Homework,
-  HomeworkDetail,
-  HomeworkStudentDetail,
   JsonResponse,
   StudentHomework,
 } from "../../utils/types";
@@ -27,7 +25,6 @@ import {
   Typography,
   message,
 } from "antd";
-import { CourseCard } from "../../components/CourseCard";
 import {
   ArrowLeftOutlined,
   ArrowRightOutlined,
@@ -42,7 +39,6 @@ import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import type { RangePickerProps } from "antd/lib/date-picker";
 import parseMysqlDateTime from "../../utils/parseTime";
-import Link from "next/link";
 
 const { Text, Title } = Typography;
 
@@ -205,7 +201,6 @@ const AssignHomeworkButton: React.FC = () => {
         } else {
           messageApi.error("遇到了未知错误");
         }
-        console.error(e);
       })
       .finally(() => {
         setConfirmLoading(false);
@@ -294,8 +289,6 @@ const AssignExamButton: React.FC = () => {
   const router = useRouter();
   const { coid } = router.query;
 
-  const { user } = useUser();
-
   const { mutate: mutateExam } = useSWR(`/api/exam/course/${coid}`);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -313,7 +306,6 @@ const AssignExamButton: React.FC = () => {
     times: Dayjs[];
   }) {
     if (!coid || Array.isArray(coid) || isNaN(+coid)) {
-      console.error("coid不合法：", coid);
       return;
     }
     const parsedTimes = values.times.map((time) =>
@@ -352,7 +344,6 @@ const AssignExamButton: React.FC = () => {
         } else {
           messageApi.error("遇到了未知错误");
         }
-        console.error(e);
       })
       .finally(() => {
         setConfirmLoading(false);

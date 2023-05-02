@@ -1,16 +1,12 @@
-import { Avatar, Button, Card, Divider, Tag, Typography } from "antd";
-import { CheckCircleOutlined } from "@ant-design/icons";
-import { UserOutlined } from "@ant-design/icons";
+import { Button, Card, Divider, Tag, Typography } from "antd";
 import parseMysqlDateTime from "../utils/parseTime";
-import { Course, Homework, StudentHomework } from "../utils/types";
-import Link from "next/link";
+import { Course } from "../utils/types";
 import React from "react";
 
 const { Text, Title } = Typography;
 
 export const CourseCard: React.FC<{ course: Course }> = ({ course }) => {
   const time = parseMysqlDateTime(course.time);
-  const currtime = new Date(Date.now());
 
   return (
     <Card

@@ -8,8 +8,7 @@ import {
   successResponse,
 } from "../../../../utils/api";
 import { sessionOptions } from "../../../../utils/session";
-import { getExamScoresByCourse, getExamTotalByCourse, getExamsByCourseID } from "../../../../utils/exam";
-import { getScoresByCourse } from "../../../../utils/homework";
+import { getExamScoresByCourse, getExamTotalByCourse } from "../../../../utils/exam";
 
 export async function examGradeRoute(
   req: NextApiRequest,

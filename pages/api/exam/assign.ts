@@ -8,14 +8,7 @@ import {
   successResponse,
 } from "../../../utils/api";
 import { sessionOptions } from "../../../utils/session";
-import {
-  getExamByID,
-  getStudentExamScore,
-  getExamsByCourseID,
-  getTeacherExamScore,
-  insertExamAssign,
-  insertExamTarget,
-} from "../../../utils/exam";
+import { insertExamAssign, insertExamTarget } from "../../../utils/exam";
 import { ExamAssginRequestBody } from "../../../utils/types";
 import { getCourseStudents } from "../../../utils/course";
 

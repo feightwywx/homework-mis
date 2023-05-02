@@ -9,17 +9,9 @@ import {
 } from "../../../utils/api";
 import { sessionOptions } from "../../../utils/session";
 import {
-  getExamByID,
-  getStudentExamScore,
-  getExamsByCourseID,
-  getTeacherExamScore,
-  insertExamAssign,
-  insertExamTarget,
   getStudentExams,
   getTeacherExams,
 } from "../../../utils/exam";
-import { ExamAssginRequestBody } from "../../../utils/types";
-import { getCourseStudents } from "../../../utils/course";
 
 export async function examScoreRoute(
   req: NextApiRequest,

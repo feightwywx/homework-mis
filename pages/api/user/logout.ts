@@ -10,7 +10,8 @@ async function logoutRoute(req: NextApiRequest, res: NextApiResponse<JsonRespons
     isLoggedIn: false,
     name: '',
     userType: 'student',
-    token: ''
+    token: '',
+    actual_id: '',
   }))
   return;
 }

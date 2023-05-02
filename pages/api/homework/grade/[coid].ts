@@ -8,7 +8,6 @@ import {
   successResponse,
 } from "../../../../utils/api";
 import { sessionOptions } from "../../../../utils/session";
-import { getExamsByCourseID } from "../../../../utils/exam";
 import { getScoresByCourse, getTotalHomeworkScoresByCourse } from "../../../../utils/homework";
 
 export async function courseGradeRoute(

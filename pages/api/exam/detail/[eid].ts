@@ -2,7 +2,7 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
 import { failResponse, parseIdFromReqest, parseUserTypeFromRequest, statusCode, successResponse } from "../../../../utils/api";
 import { sessionOptions } from "../../../../utils/session";
-import { getExamByID, getExamsByCourseID } from "../../../../utils/exam";
+import { getExamByID } from "../../../../utils/exam";
 
 export async function examDetailRoute(req: NextApiRequest, res: NextApiResponse) {
   const { eid } = req.query;

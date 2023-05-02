@@ -116,7 +116,6 @@ export function StudentDetail({
       } else {
         message.error('遇到了未知错误')
       }
-      console.error(e);
     }).finally(() => {
       setConfirmLoading(false);
     })
@@ -263,7 +262,6 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
       } else {
         message.error('遇到了未知错误')
       }
-      console.error(e);
     }).finally(() => {
       setConfirmJudgeLoading(false);
     })
@@ -289,7 +287,6 @@ export function TeacherDetail({ content, hwid }: { content: Array<HomeworkTeache
       } else {
         message.error('遇到了未知错误')
       }
-      console.error(e);
     })
   }
 

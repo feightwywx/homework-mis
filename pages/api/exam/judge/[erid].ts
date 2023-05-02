@@ -40,7 +40,6 @@ export async function examScoreRoute(
     return;
   }
 
-  console.log(+erid, score);
   if (userType === "teacher") {
     const result = await updateExamScore(+erid, score);
     if (result > 0) {

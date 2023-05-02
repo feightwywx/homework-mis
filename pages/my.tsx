@@ -3,26 +3,21 @@ import HwLayout from "../components/layout";
 import useUser from "../utils/hooks/useUser";
 import useSWR from "swr";
 import {
-  Course,
   JsonResponse,
   StudentUserDetail,
   TeacherUserDetail,
 } from "../utils/types";
 import {
   Button,
-  Col,
   Descriptions,
   Form,
   Input,
   Modal,
-  Row,
   Space,
   Spin,
   Typography,
   message,
 } from "antd";
-import { CourseCard } from "../components/CourseCard";
-import { PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
 
 type passwordFormData = {
@@ -47,7 +42,6 @@ function MyIndexPage() {
   const [passwordForm] = Form.useForm();
 
   const onPasswordFormFinish = async (values: passwordFormData) => {
-    console.log(values);
     setModalConfirmLoading(true);
 
     try {
@@ -63,7 +57,6 @@ function MyIndexPage() {
       });
       const validateResponseJson =
         (await validateResponse.json()) as JsonResponse;
-      console.log(validateResponseJson);
       if (validateResponseJson.code !== 0) {
         message.error("旧密码错误");
         return;
@@ -91,7 +84,6 @@ function MyIndexPage() {
       } else {
         messageApi.error("遇到了未知错误");
       }
-      console.error(e);
     } finally {
       setModalConfirmLoading(false);
     }

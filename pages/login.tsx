@@ -33,14 +33,10 @@ function Login() {
       } else {
         message.error('遇到了未知错误')
       }
-      console.error(e);
     }).finally(() => {
       setSpinning(false);
     })
   }
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('验证失败', errorInfo);
-  };
 
   return (
     <HwLayout>
@@ -57,7 +53,6 @@ function Login() {
               usertype: 'student'
             }}
             onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
           >
             <Form.Item
               name='usertype'

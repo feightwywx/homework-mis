@@ -8,24 +8,17 @@ import {
   Divider,
   Tag,
   Modal,
-  Input,
   Table,
   Form,
   InputNumber,
   message,
   Spin,
 } from "antd";
-import { ArrowLeftOutlined, FormOutlined } from "@ant-design/icons";
-import { useMediaPredicate } from "react-media-hook";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import useUser from "../../utils/hooks/useUser";
 import {
   Exam,
   ExamResult,
-  HomeworkDetail,
-  HomeworkDetailContent,
-  HomeworkStudentDetail,
-  HomeworkTeacherDetail,
-  HomeworkTeacherDetailContent,
   JsonResponse,
 } from "../../utils/types";
 import React, { useState } from "react";
@@ -33,8 +26,7 @@ import useSWR from "swr";
 import parseMysqlDateTime from "../../utils/parseTime";
 import { ColumnsType } from "antd/lib/table";
 
-const { Title, Text, Paragraph } = Typography;
-const { TextArea } = Input;
+const { Title, Text } = Typography;
 
 function ExamDetailPage() {
   const router = useRouter();
@@ -91,7 +83,6 @@ function ExamDetailPage() {
 export const StudentExamScore: React.FC<{ eid: number }> = ({ eid }) => {
   const { data: scoreData } = useSWR(`/api/exam/score/${eid}`);
   const score = (scoreData as JsonResponse<number | undefined>)?.result;
-  console.log("frontend score: ", score);
 
   return (
     <>
@@ -144,7 +135,6 @@ export const TeacherUploadScore: React.FC<{ eid: number }> = ({ eid }) => {
 
   const judgeFormSubmitHandler = async (values: { score: number }) => {
     setConfirmJudgeLoading(true);
-    console.log(currentResultID, values.score);
 
     try {
       const submitResponse = await fetch(`/api/exam/judge/${currentResultID}`, {
@@ -158,7 +148,6 @@ export const TeacherUploadScore: React.FC<{ eid: number }> = ({ eid }) => {
         | JsonResponse<number>
         | undefined;
       if (submitResponseJson) {
-        console.log(submitResponseJson);
         if (submitResponseJson.code === 0) {
           messageApi.success("已提交");
           mutateExamScores();
@@ -173,7 +162,6 @@ export const TeacherUploadScore: React.FC<{ eid: number }> = ({ eid }) => {
       } else {
         messageApi.error("遇到了未知错误");
       }
-      console.error(e);
     } finally {
       setConfirmJudgeLoading(false);
     }

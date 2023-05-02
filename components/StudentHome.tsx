@@ -1,4 +1,4 @@
-import { Col, Divider, Row, Skeleton, Space, Spin, Typography } from "antd";
+import { Col, Row, Skeleton, Space, Spin, Typography } from "antd";
 import HwLayout from "./layout";
 import useUser from "../utils/hooks/useUser";
 import { useStudentHomework } from "../utils/hooks/useHomework";
@@ -8,7 +8,7 @@ import useSWR from "swr";
 import { Exam, JsonResponse } from "../utils/types";
 import { ExamCard } from "./ExamCard";
 
-const { Text, Title } = Typography;
+const { Title } = Typography;
 
 export function StudentHome(): JSX.Element {
   const { user } = useUser();

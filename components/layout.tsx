@@ -7,7 +7,7 @@ import styles from "../styles/Layout.module.css";
 import useUser from "../utils/hooks/useUser";
 import fetchJson from "../utils/fetchJson";
 import Link from "next/link";
-import Router, { useRouter } from "next/router";
+import Router from "next/router";
 
 const { Header, Content, Footer } = Layout;
 
@@ -17,7 +17,7 @@ export default function HwLayout({
   children: React.ReactNode;
 }): JSX.Element {
   const { user, mutateUser } = useUser();
-  const router = useRouter();
+
   const [spinning, setSpinning] = React.useState(false);
 
   async function onLogoutClick(e: React.MouseEvent<HTMLDivElement>) {

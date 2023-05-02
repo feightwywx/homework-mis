@@ -22,7 +22,6 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
         userType: usertype,
         token: token
       } as User;
-      console.log(user)
       req.session.user = user;
       await req.session.save();
 

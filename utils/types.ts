@@ -22,7 +22,7 @@ export interface Homework {
   deadline: string;
   teacher: string;
   courseName: string;
-  courseID: string;
+  courseID: number;
 }
 
 export interface HomeworkDetail {

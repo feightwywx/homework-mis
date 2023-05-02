@@ -1,8 +1,7 @@
-import { Avatar, Button, Card, Divider, Tag, Typography } from "antd";
-import { CheckCircleOutlined } from "@ant-design/icons";
-import { UserOutlined, RightOutlined } from "@ant-design/icons";
+import { Button, Card, Divider, Typography } from "antd";
+import { RightOutlined } from "@ant-design/icons";
 import parseMysqlDateTime from "../utils/parseTime";
-import { Exam, Homework, StudentHomework } from "../utils/types";
+import { Exam } from "../utils/types";
 import Link from "next/link";
 import { useRouter } from "next/router";
 

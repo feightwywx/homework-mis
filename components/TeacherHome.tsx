@@ -1,8 +1,6 @@
 import {
-  Button,
   Col,
   DatePicker,
-  Divider,
   Form,
   Input,
   Modal,
@@ -15,7 +13,6 @@ import {
   Spin,
   Skeleton,
 } from "antd";
-import { FormOutlined } from "@ant-design/icons";
 import HwLayout from "./layout";
 import useUser from "../utils/hooks/useUser";
 import { useTeacherHomework } from "../utils/hooks/useHomework";
@@ -107,7 +104,6 @@ export function TeacherHome(): JSX.Element {
         } else {
           message.error("遇到了未知错误");
         }
-        console.error(e);
       });
 
   async function assignClickHandler(values: {
@@ -163,7 +159,6 @@ export function TeacherHome(): JSX.Element {
         } else {
           message.error("遇到了未知错误");
         }
-        console.error(e);
       })
       .finally(() => {
         setConfirmLoading(false);

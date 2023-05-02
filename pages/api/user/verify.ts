@@ -1,5 +1,3 @@
-import { User } from "../../../utils/types";
-
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { sessionOptions } from '../../../utils/session'
 import { NextApiRequest, NextApiResponse } from 'next'
@@ -11,7 +9,6 @@ async function verifyRoute(req: NextApiRequest, res: NextApiResponse) {
   const { username, password, usertype } = await req.body;
   try {
     const token = await getToken(username, password, usertype);
-    console.log(username, password, usertype)
     if (token === null) {
       res.json(failResponse(statusCode.TOKEN_INVALID));
       return;

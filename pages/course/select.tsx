@@ -3,12 +3,10 @@ import HwLayout from "../../components/layout";
 import useUser from "../../utils/hooks/useUser";
 import useSWR from "swr";
 import { Course, JsonResponse } from "../../utils/types";
-import { Button, Col, Row, Space, Spin, Typography } from "antd";
-import { CourseCard } from "../../components/CourseCard";
-import { PlusOutlined } from "@ant-design/icons";
+import { Space, Spin, Typography } from "antd";
 import { ProTable } from "@ant-design/pro-components";
 
-const { Text, Title } = Typography;
+const { Title } = Typography;
 
 function CourseIndexPage() {
   const { user } = useUser();

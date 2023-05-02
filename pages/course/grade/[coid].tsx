@@ -3,77 +3,23 @@ import HwLayout from "../../../components/layout";
 import useUser from "../../../utils/hooks/useUser";
 import useSWR from "swr";
 import {
-  Course,
-  Exam,
-  ExamAssginRequestBody,
   ExamContentScore,
   ExamTotalScore,
-  Homework,
   HomeworkContentScore,
-  HomeworkDetail,
-  HomeworkStudentDetail,
   HomeworkTotalScore,
   JsonResponse,
-  StudentHomework,
 } from "../../../utils/types";
-import {
-  Avatar,
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Skeleton,
-  Space,
-  Spin,
-  Table,
-  Tag,
-  Typography,
-  message,
-} from "antd";
-import { CourseCard } from "../../../components/CourseCard";
+import { Button, Skeleton, Space, Spin, Table, Tag, Typography } from "antd";
 import {
   ArrowLeftOutlined,
-  ArrowRightOutlined,
-  UserOutlined,
-  FormOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/router";
-import { HomeworkCard } from "../../../components/HomeworkCard";
-import { ExamCard } from "../../../components/ExamCard";
-import { useState } from "react";
-import dayjs from "dayjs";
-import type { Dayjs } from "dayjs";
-import type { RangePickerProps } from "antd/lib/date-picker";
-import parseMysqlDateTime from "../../../utils/parseTime";
-import Link from "next/link";
 
 const { Text, Title } = Typography;
 
 const CourseGradePage: NextPage = () => {
   const router = useRouter();
-  const { coid } = router.query;
-
   const { user } = useUser();
-
-  const { data: homeworkScoresData } = useSWR<
-    JsonResponse<HomeworkContentScore[]>
-  >(`/api/homework/grade/${coid}`);
-  const homeworkScoresDataSource = homeworkScoresData?.result.map((item) => ({
-    key: item.id,
-    ...item,
-  }));
-
-  const { data: examScoresData } = useSWR<JsonResponse<ExamContentScore[]>>(
-    `/api/exam/grade/${coid}`
-  );
-  const examScoresDataSource = examScoresData?.result.map((item) => ({
-    key: item.id,
-    ...item,
-  }));
 
   return (
     <HwLayout>
@@ -111,8 +57,6 @@ const StudentGradeReports: React.FC = () => {
   const router = useRouter();
   const { coid } = router.query;
 
-  const { user } = useUser();
-
   const { data: homeworkScoresData } = useSWR<
     JsonResponse<HomeworkContentScore[]>
   >(`/api/homework/grade/${coid}`);
@@ -128,8 +72,6 @@ const StudentGradeReports: React.FC = () => {
     key: item.id,
     ...item,
   }));
-
-  console.log(homeworkScoresDataSource)
 
   return (
     <>
@@ -262,8 +204,6 @@ const TeacherGradeReports: React.FC = () => {
   const router = useRouter();
   const { coid } = router.query;
 
-  const { user } = useUser();
-
   const { data: homeworkTotalData } = useSWR<
     JsonResponse<HomeworkTotalScore[]>
   >(`/api/homework/grade/${coid}`);
@@ -332,7 +272,7 @@ const TeacherGradeReports: React.FC = () => {
                 sorter: (a, b) => a.averageScore - b.averageScore,
               },
             ]}
-            dataSource={homeworkTotalDataSource}
+            dataSource={examTotalDataSource}
           />
         </>
       ) : (

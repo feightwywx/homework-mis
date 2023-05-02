@@ -9,9 +9,7 @@ import {
 } from "../../../../utils/api";
 import { sessionOptions } from "../../../../utils/session";
 import {
-  getExamByID,
   getStudentExamScore,
-  getExamsByCourseID,
   getTeacherExamScore,
 } from "../../../../utils/exam";
 
