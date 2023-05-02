@@ -135,3 +135,16 @@ export type ExamContentScore = {
   examID: number;
   examName: string;
 }
+
+export type HomeworkTotalScore = {
+  studentID: number;
+  studentName: string;
+  completionRate: number;
+  averageScore: number;
+};
+
+export type ExamTotalScore = {
+  studentID: number;
+  studentName: string;
+  averageScore: number;
+};

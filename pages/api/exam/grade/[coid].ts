@@ -8,7 +8,7 @@ import {
   successResponse,
 } from "../../../../utils/api";
 import { sessionOptions } from "../../../../utils/session";
-import { getExamScoresByCourse, getExamsByCourseID } from "../../../../utils/exam";
+import { getExamScoresByCourse, getExamTotalByCourse, getExamsByCourseID } from "../../../../utils/exam";
 import { getScoresByCourse } from "../../../../utils/homework";
 
 export async function examGradeRoute(
@@ -36,6 +36,15 @@ export async function examGradeRoute(
 
   if (userType === "student") {
     const result = await getExamScoresByCourse(id, +coid);
+
+    if (result) {
+      res.json(successResponse(result));
+    } else {
+      res.json(failResponse(statusCode.NUL_QUERY_DATA));
+    }
+    return;
+  } else if (userType === "teacher") {
+    const result = await getExamTotalByCourse(+coid);
 
     if (result) {
       res.json(successResponse(result));

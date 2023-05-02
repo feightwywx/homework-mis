@@ -1,6 +1,6 @@
 import { ResultSetHeader } from "mysql2";
 import { createMisConnection } from "./mysql";
-import { Exam, ExamContentScore, ExamResult } from "./types";
+import { Exam, ExamContentScore, ExamResult, ExamTotalScore } from "./types";
 
 type ExamRow = {
   id: number;
@@ -26,6 +26,12 @@ type ExamContentScoreRow = {
   score?: number;
   examID: number;
   examName: string;
+};
+
+export type ExamTotalScoreRow = {
+  studentID: number;
+  studentName: string;
+  averageScore: number;
 };
 
 export async function getExamsByCourseID(coid: number): Promise<Exam[]> {
@@ -187,7 +193,7 @@ export async function getExamScoresByCourse(
     SELECT exam_result.id, exam_result.score, exam.id AS examID, exam.name AS examName
     FROM exam_result
     JOIN exam ON exam.id = exam_result.examID
-    WHERE exam_result.studentID = 1 AND exam.courseID = 1;`,
+    WHERE exam_result.studentID = ? AND exam.courseID = ?;`,
     [studentID, courseID]
   );
   await conn.end();
@@ -195,6 +201,35 @@ export async function getExamScoresByCourse(
   const result = (rows as ExamContentScoreRow[]).map((item) => ({
     ...item,
     score: item.score ? +item.score : item.score
+  }));
+  return result;
+}
+
+export async function getExamTotalByCourse(
+  courseID: number
+): Promise<ExamTotalScore[]> {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    `
+    SELECT
+      student.id AS studentID,
+      student.NAME AS studentName,
+      AVG( COALESCE ( exam_result.score, 0 )) AS averageScore 
+    FROM
+      exam_result
+      JOIN student ON exam_result.studentID = student.id
+      JOIN exam ON exam_result.examID = exam.id 
+    WHERE
+      exam.courseID = ? 
+    GROUP BY
+      exam_result.studentID;`,
+    [courseID]
+  );
+  await conn.end();
+
+  const result = (rows as ExamTotalScoreRow[]).map((item) => ({
+    ...item,
+    averageScore: +item.averageScore
   }));
   return result;
 }
