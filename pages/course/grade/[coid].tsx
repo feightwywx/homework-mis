@@ -129,6 +129,8 @@ const StudentGradeReports: React.FC = () => {
     ...item,
   }));
 
+  console.log(homeworkScoresDataSource)
+
   return (
     <>
       <Title level={2}>作业</Title>
@@ -171,11 +173,17 @@ const StudentGradeReports: React.FC = () => {
                   ) : (
                     <Tag>未完成</Tag>
                   ),
+                filters: [
+                  { text: "已完成", value: true },
+                  { text: "未完成", value: false },
+                ],
+                onFilter: (value, record) => record.completed === value,
               },
               {
                 key: "score",
                 dataIndex: "score",
                 title: "评分",
+                sorter: (a, b) => (a.score ?? 0) - (b.score ?? 0),
               },
               {
                 key: "action",
@@ -223,6 +231,7 @@ const StudentGradeReports: React.FC = () => {
                 key: "score",
                 dataIndex: "score",
                 title: "评分",
+                sorter: (a, b) => (a.score ?? 0) - (b.score ?? 0),
               },
               {
                 key: "action",
