@@ -120,3 +120,18 @@ export type ExamAssginRequestBody = {
   endtime: string;
   courseID: number;
 }
+
+export type HomeworkContentScore = {
+  id: number;
+  completed?: boolean;
+  score?: number;
+  homeworkID: number;
+  homeworkTitle: string;
+}
+
+export type ExamContentScore = {
+  id: number;
+  score?: number;
+  examID: number;
+  examName: string;
+}

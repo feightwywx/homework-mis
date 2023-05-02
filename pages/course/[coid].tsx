@@ -30,6 +30,7 @@ import {
 import { CourseCard } from "../../components/CourseCard";
 import {
   ArrowLeftOutlined,
+  ArrowRightOutlined,
   UserOutlined,
   FormOutlined,
 } from "@ant-design/icons";
@@ -41,6 +42,7 @@ import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import type { RangePickerProps } from "antd/lib/date-picker";
 import parseMysqlDateTime from "../../utils/parseTime";
+import Link from "next/link";
 
 const { Text, Title } = Typography;
 
@@ -84,10 +86,20 @@ const CourseIndexPage: NextPage = () => {
               />
               <Title style={{ float: "left" }}>{course.name}</Title>
             </div>
+
             <Card style={{ marginBottom: 12 }}>
               <Avatar icon={<UserOutlined />} style={{ marginTop: 0 }} />
               <Text style={{ marginLeft: 12 }}>{course.teacherName}</Text>
             </Card>
+
+            <div style={{ display: "flex", alignItems: "baseline" }}>
+              <Title level={2}>成绩</Title>
+              <div style={{ flex: 1 }} />
+              <Button type="link" size="large" onClick={() => {router.push(`/course/grade/${coid}`)}}>
+                查看
+                <ArrowRightOutlined />
+              </Button>
+            </div>
 
             <div style={{ display: "flow" }}>
               {user?.userType === "teacher" && <AssignHomeworkButton />}

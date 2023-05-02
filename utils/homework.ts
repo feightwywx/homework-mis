@@ -1,6 +1,6 @@
 import { ResultSetHeader } from "mysql2";
 import { getNowMySqlDateTime, createMisConnection } from "./mysql";
-import { StudentHomework, Homework, HomeworkDetailContent, HomeworkStudentDetail, HomeworkTeacherDetailContent } from "./types";
+import { StudentHomework, Homework, HomeworkDetailContent, HomeworkStudentDetail, HomeworkTeacherDetailContent, HomeworkContentScore } from "./types";
 
 type StudentHomeworkRow = {
   id: number;
@@ -48,6 +48,14 @@ type TeacherHomeworkDetailRow = {
   content: string;
   score: number;
   comment: string;
+}
+
+type HomeworkContentScoreRow = {
+  id: number;
+  completed: number;
+  score: number;
+  homeworkID: number;
+  homeworkTitle: string;
 }
 
 export async function getStudentHomeworks(id: number, courseID?: number) {
@@ -297,4 +305,23 @@ export async function insertTarget(hwid: number, target: number) {
   await conn.end();
 
   return (rows as ResultSetHeader).affectedRows
+}
+
+export async function getScoresByCourse(studentID: number, courseID: number): Promise<HomeworkContentScore[]> {
+  const conn = await createMisConnection();
+  const [rows] = await conn.query(
+    `
+    SELECT homework_content.*, homework.title AS homeworkTitle
+    FROM homework_content
+    JOIN homework ON homework.id = homework_content.homeworkID
+    WHERE homework_content.studentID = ? AND homework.courseID = ?;`,
+    [studentID, courseID]
+  );
+  await conn.end();
+
+  const result = (rows as HomeworkContentScoreRow[]).map(item => ({
+    ...item,
+    completed: !!item.completed
+  }))
+  return result;
 }
