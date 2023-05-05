@@ -57,7 +57,7 @@ export function CommonDetail({ content: detail }: { content: HomeworkDetail }) {
           style={{
             float: 'left', verticalAlign: 'middle', margin: '8px 24px 0 0'
           }}
-          onClick={() => { router.push('/') }}
+          onClick={() => { router.back() }}
         />
         <Title style={{ float: 'left' }}>{detail.title}</Title>
       </div>

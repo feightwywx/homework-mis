@@ -20,7 +20,7 @@ export async function getStudentCourses(id: number) {
     `
     SELECT course.* , teacher.name AS teacherName
     FROM course
-    JOIN course_student ON course.id = course_student.studentID 
+    JOIN course_student ON course.id = course_student.courseID 
     JOIN teacher ON course.teacherID = teacher.id
     WHERE course_student.studentID = ?;`,
     [id]
