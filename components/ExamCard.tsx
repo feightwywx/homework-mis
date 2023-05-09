@@ -35,7 +35,7 @@ export const ExamCard: React.FC<{ exam: Exam; withBottom?: boolean }> = ({
             <Button
               type="link"
               size="small"
-              onClick={() => router.push(`/exam/${exam.courseID}`)}
+              onClick={() => router.push(`/course/${exam.courseID}`)}
             >
               {exam.courseName}
               <RightOutlined />

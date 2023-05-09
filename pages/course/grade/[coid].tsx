@@ -182,7 +182,7 @@ const StudentGradeReports: React.FC = () => {
                   <Button
                     type="link"
                     onClick={() => {
-                      router.push(`/homeworkDetail/${record.examID}`);
+                      router.push(`/exam/${record.examID}`);
                     }}
                   >
                     查看考试
