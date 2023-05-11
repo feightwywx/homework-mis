@@ -10,9 +10,7 @@ import {
   JsonResponse,
 } from "../../../utils/types";
 import { Button, Skeleton, Space, Spin, Table, Tag, Typography } from "antd";
-import {
-  ArrowLeftOutlined,
-} from "@ant-design/icons";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 
 const { Text, Title } = Typography;
@@ -81,21 +79,23 @@ const StudentGradeReports: React.FC = () => {
           <Space direction="horizontal">
             <Text>
               完成率：
-              {(
-                (homeworkScoresData.result.filter((item) => item.completed)
-                  .length /
-                  homeworkScoresData.result.length) *
-                100
-              ).toFixed(2)}
+              {homeworkScoresData.result.length > 0 &&
+                (
+                  (homeworkScoresData.result.filter((item) => item.completed)
+                    .length /
+                    homeworkScoresData.result.length) *
+                  100
+                ).toFixed(2)}
               %
             </Text>
             <Text>
               平均分：
-              {(
-                homeworkScoresData.result
-                  .map((item) => item.score ?? 0)
-                  .reduce((a, b) => a + b) / homeworkScoresData.result.length
-              ).toFixed(2)}
+              {homeworkScoresData.result.length > 0 &&
+                (
+                  homeworkScoresData.result
+                    .map((item) => item.score ?? 0)
+                    .reduce((a, b) => a + b) / homeworkScoresData.result.length
+                ).toFixed(2)}
             </Text>
           </Space>
           <Table
@@ -155,11 +155,12 @@ const StudentGradeReports: React.FC = () => {
           <Space direction="horizontal">
             <Text>
               平均分：
-              {(
-                examScoresData.result
-                  .map((item) => item.score ?? 0)
-                  .reduce((a, b) => a + b) / examScoresData.result.length
-              ).toFixed(2)}
+              {examScoresData.result.length > 0 &&
+                (
+                  examScoresData.result
+                    .map((item) => item.score ?? 0)
+                    .reduce((a, b) => a + b) / examScoresData.result.length
+                ).toFixed(2)}
             </Text>
           </Space>
           <Table
