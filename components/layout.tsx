@@ -99,7 +99,7 @@ export default function HwLayout({
           <div className={styles["site-layout-content"]}>{children}</div>
         </Spin>
       </Content>
-      <Footer style={{ textAlign: "center" }}>©️2022 .direwolf</Footer>
+      <Footer style={{ textAlign: "center" }}>©️2023 .direwolf</Footer>
     </Layout>
   );
 }
